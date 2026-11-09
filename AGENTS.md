@@ -22,7 +22,7 @@ served by GitHub Pages at https://copy-as-markdown.tuckbick.com/).
 
 ## Updating from Turndown
 
-Triggered by an "upstream" issue from the weekly workflow, or by being asked to check for
+Triggered by an "upstream" issue from the monthly workflow, or by being asked to check for
 Turndown updates.
 
 1. `GITHUB_TOKEN=$(gh auth token) npm run check-upstream` to see what changed and which

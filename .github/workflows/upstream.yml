@@ -1,10 +1,10 @@
-# Weekly check for new Turndown / turndown-plugin-gfm changes.
+# Monthly check (1st of the month, 14:00 UTC) for new Turndown / turndown-plugin-gfm changes.
 # Opens (or updates) an issue labeled "upstream" when there's something to port.
 name: Upstream check
 
 on:
   schedule:
-    - cron: '0 14 * * 1'
+    - cron: '0 14 1 * *'
   workflow_dispatch:
 
 permissions:

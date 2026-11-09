@@ -63,7 +63,7 @@ The version is in `package.json` and shown on the install page; installed bookma
 
 ### Keeping up with Turndown
 
-`upstream.json` records the exact Turndown and turndown-plugin-gfm versions the port is based on. A weekly GitHub Action (`.github/workflows/upstream.yml`) runs `npm run check-upstream` and opens an issue labeled `upstream` when a ported file has changed. To act on it, ask Claude Code (or another coding agent) in this repo to "update from Turndown"; the steps it follows are in [AGENTS.md](AGENTS.md), which `CLAUDE.md` points to.
+`upstream.json` records the exact Turndown and turndown-plugin-gfm versions the port is based on. A monthly GitHub Action (`.github/workflows/upstream.yml`) runs `npm run check-upstream` and opens an issue labeled `upstream` when a ported file has changed. To act on it, ask Claude Code (or another coding agent) in this repo to "update from Turndown"; the steps it follows are in [AGENTS.md](AGENTS.md), which `CLAUDE.md` points to.
 
 This writes `index.html` (the install page) and `bookmarklet.url.txt` (the raw `javascript:` URL, git-ignored). The install page's favicon is `icons/clipboard.svg`.
 
