@@ -10,7 +10,7 @@ Open the install page, **https://copy-as-markdown.tuckbick.com/**, and drag the 
 
 If dragging doesn't work (some Safari versions), create any bookmark and replace its URL with the code shown on the install page.
 
-Browsers don't keep a favicon for `javascript:` bookmarks, so the bookmark is named "📋 Copy as Markdown" and the emoji serves as its icon.
+Browsers don't keep a favicon for `javascript:` bookmarks, so the emoji at the start of the bookmark's name serves as its icon. The install page lets you pick the emoji and name (default "📋 Copy as Markdown", or a shorter one like "📋 MD", or your own) before dragging; the choices are the `EMOJIS` and `NAMES` lists in `build.mjs`.
 
 ## What it converts
 

@@ -30,6 +30,12 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, 
 // CC-BY 4.0, see THIRD_PARTY_NOTICES.md) is the install page's own favicon.
 const NAME = 'Copy as Markdown';
 const EMOJI = '📋';
+
+// Name choices on the install page. The dragged bookmark takes the button's
+// label as its name, so people can pick whatever they'll recognize. The first
+// entry in each list is the default.
+const EMOJIS = ['📋', '📝', '✂️', '⬇️', '🔽', ''];
+const NAMES = [NAME, 'MD', 'Markdown', 'Copy as MD', 'Copy MD', 'Selection → MD', 'Markdownify', ''];
 const svgIcon = readFileSync(new URL('icons/clipboard.svg', dir));
 const svgDataUri = 'data:image/svg+xml;base64,' + svgIcon.toString('base64');
 
@@ -59,6 +65,20 @@ const html = `<!doctype html>
   .demo blockquote { margin:0; padding-left:14px; border-left:3px solid var(--line); color:var(--muted); }
   .demo pre { background:var(--code); padding:12px; border-radius:8px; overflow:auto; }
   .muted { color: var(--muted); font-size: 14px; }
+  .picker { padding:14px 16px; display:grid; grid-template-columns:auto 1fr; gap:10px 14px; align-items:start; }
+  .h2-note { font-size:13px; font-weight:500; color:var(--muted); margin-left:6px; }
+  .picker-note { grid-column:1 / -1; margin:2px 0 0; font-size:13px; }
+  .chip:disabled { opacity:.4; cursor:not-allowed; }
+  .picker-label { font-size:13px; color:var(--muted); margin:0; padding-top:4px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font:inherit; font-size:14px; margin:0; padding:3px 10px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--fg); cursor:pointer; min-width:36px; }
+  .chip[aria-pressed="true"] { border-color:var(--accent); color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent); font-weight:600; }
+  .chip:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .custom { font:inherit; font-size:14px; padding:3px 10px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--fg); width:160px; max-width:100%; }
+  .custom:focus { outline:2px solid var(--accent); outline-offset:1px; }
+  .drag-zone { margin:12px 0 6px; }
+  .drag-zone .drag { font-size:18px; padding:16px 28px; border-radius:12px; min-height:58px; }
+  @media (max-width: 480px) { .picker { grid-template-columns:1fr; } .picker-label { padding-top:0; } }
 </style>
 </head>
 <body>
@@ -66,15 +86,26 @@ const html = `<!doctype html>
   <h1>Copy as Markdown</h1>
   <p class="lead">Select text on any page, click the bookmark, and the selection lands on your clipboard as Markdown.</p>
 
-  <p><a class="drag" href="${esc(url)}" onclick="alert('Drag this button to your bookmarks bar instead of clicking it.'); return false;">${EMOJI} ${NAME}</a></p>
+  <h2 id="configure">Configure <span class="h2-note">optional</span></h2>
+  <section class="card picker" aria-labelledby="configure">
+    <p class="picker-label" id="emoji-label">Icon</p>
+    <div class="chips" id="emojis" role="group" aria-labelledby="emoji-label"></div>
+    <p class="picker-label" id="name-label">Name</p>
+    <div class="chips" id="names" role="group" aria-labelledby="name-label"></div>
+    <p class="picker-note muted">This becomes the bookmark's name. Browsers don't show icons for bookmarklets, so the emoji is how you'll spot it; shorter names won't get cut off in the bar.</p>
+  </section>
 
   <h2>Install</h2>
   <div class="card">
     <ol>
       <li>Show your bookmarks bar (<code>⌘⇧B</code> on Mac, <code>Ctrl+Shift+B</code> on Windows).</li>
-      <li>Drag the blue <b>${EMOJI} ${NAME}</b> button above onto the bookmarks bar. The ${EMOJI} in its name is how you'll spot it.</li>
+      <li>Drag this button onto the bookmarks bar:
+        <div class="drag-zone">
+          <a class="drag" id="drag" href="${esc(url)}" onclick="alert('Drag this button to your bookmarks bar instead of clicking it.'); return false;">${EMOJI} ${NAME}</a>
+        </div>
+      </li>
     </ol>
-    <p class="muted">Drag not working (e.g. Safari)? Bookmark any page, edit that bookmark, and replace its URL with this:</p>
+    <p class="muted">Drag not working (e.g. Safari)? Bookmark any page, edit that bookmark, name it <b class="current-name">${EMOJI} ${NAME}</b>, and replace its URL with this:</p>
     <textarea id="code" readonly>${esc(url)}</textarea>
     <button id="copybtn">Copy bookmarklet code</button>
   </div>
@@ -101,6 +132,71 @@ console.log(x);</code></pre>
   </div>
 </main>
 <script>
+  (function () {
+    var EMOJIS = ${JSON.stringify(EMOJIS)};
+    var NAMES = ${JSON.stringify(NAMES)};
+    var KEY = 'copy-as-markdown:name';
+    var state = { emoji: EMOJIS[0], name: NAMES[0] };
+    // A label needs an emoji or a name (or both): "None" is disabled in one row
+    // while the other row is on "None".
+    function valid (s) {
+      return s && typeof s.emoji === 'string' && typeof s.name === 'string' && (s.emoji || s.name.trim());
+    }
+    try {
+      var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (valid(saved)) state = saved;
+    } catch (e) {}
+
+    var drag = document.getElementById('drag');
+    var custom;
+
+    function label() { return [state.emoji, state.name.trim()].filter(Boolean).join(' '); }
+
+    function render() {
+      drag.textContent = label();
+      document.querySelectorAll('.current-name').forEach(function (el) { el.textContent = label(); });
+      document.querySelectorAll('#emojis .chip').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.value === state.emoji));
+        b.disabled = !b.dataset.value && !state.name.trim();
+      });
+      var preset = NAMES.indexOf(state.name) >= 0;
+      document.querySelectorAll('#names .chip').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.value === state.name));
+        b.disabled = !b.dataset.value && !state.emoji;
+      });
+      if (custom && !preset && document.activeElement !== custom) custom.value = state.name;
+      if (custom && preset && document.activeElement !== custom) custom.value = '';
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    }
+
+    function chip(parent, value, text, key) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.dataset.value = value;
+      b.textContent = text;
+      b.addEventListener('click', function () { state[key] = value; render(); });
+      parent.appendChild(b);
+    }
+
+    var emojiBox = document.getElementById('emojis');
+    EMOJIS.forEach(function (e) { chip(emojiBox, e, e || 'None', 'emoji'); });
+    var nameBox = document.getElementById('names');
+    NAMES.forEach(function (n) { chip(nameBox, n, n || 'None', 'name'); });
+
+    custom = document.createElement('input');
+    custom.className = 'custom';
+    custom.placeholder = 'Or type your own';
+    custom.setAttribute('aria-label', 'Custom name');
+    custom.maxLength = 40;
+    custom.addEventListener('input', function () {
+      state.name = custom.value.trim() ? custom.value : NAMES[0];
+      render();
+    });
+    nameBox.appendChild(custom);
+    render();
+  })();
+
   document.getElementById('copybtn').addEventListener('click', function () {
     var ta = document.getElementById('code');
     ta.select();
