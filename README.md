@@ -41,11 +41,25 @@ MIT, see [LICENSE](LICENSE). The converter is adapted from Turndown and turndown
 
 The site is published by GitHub Pages straight from the root of `main` (Settings → Pages → *Deploy from a branch*), so pushing a rebuilt `index.html` updates it. `.nojekyll` tells Pages to serve the files as-is, and `CNAME` sets the custom domain (copy-as-markdown.tuckbick.com, a DNS CNAME to `tuckbick.github.io`).
 
-`bookmarklet.js` is the readable source. After editing it, rebuild the bookmarklet and the install page:
+`bookmarklet.js` is the readable source. After editing it, install the dev dependencies once, then run the tests and rebuild the bookmarklet and the install page:
 
 ```bash
-node build.mjs
+npm install
 ```
+
+```bash
+npm test
+```
+
+```bash
+npm run build
+```
+
+The tests compare the port's output with the real Turndown (pinned in `package.json`) for HTML that doesn't touch an intentional difference, and check the differences and selection handling separately. CI runs them on every push and fails if the committed `index.html` is out of date.
+
+### Keeping up with Turndown
+
+`upstream.json` records the exact Turndown and turndown-plugin-gfm versions the port is based on. A weekly GitHub Action (`.github/workflows/upstream.yml`) runs `npm run check-upstream` and opens an issue labeled `upstream` when a ported file has changed. To act on it, ask Claude Code (or another coding agent) in this repo to "update from Turndown"; the steps it follows are in [AGENTS.md](AGENTS.md), which `CLAUDE.md` points to.
 
 This writes `index.html` (the install page) and `bookmarklet.url.txt` (the raw `javascript:` URL, git-ignored). The install page's favicon is `icons/clipboard.svg`.
 

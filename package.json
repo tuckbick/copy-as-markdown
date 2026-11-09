@@ -1,0 +1,18 @@
+{
+  "name": "copy-as-markdown",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bookmarklet: copy the selected text on any page to your clipboard as Markdown",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test \"test/*.test.mjs\"",
+    "check-upstream": "node scripts/check-upstream.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "31.0.0",
+    "turndown": "7.2.5",
+    "turndown-plugin-gfm": "1.0.2"
+  }
+}
