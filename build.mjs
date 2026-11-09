@@ -12,7 +12,14 @@ const code = src
   .filter((l) => l && !l.startsWith('//'))
   .join('\n');
 
-const url = 'javascript:' + encodeURIComponent(code);
+// Only escape what would break the URL: % (escapes), # (fragment) and line breaks.
+// Full encodeURIComponent roughly doubles the length for no benefit.
+const url = 'javascript:' + code.replace(/[%#\r\n\t]/g, encodeURIComponent);
+const MAX = 32000;
+if (url.length > MAX) {
+  console.error(`bookmarklet is ${url.length} chars; keep it under ${MAX} so it works in every browser`);
+  process.exit(1);
+}
 writeFileSync(new URL('bookmarklet.url.txt', dir), url + '\n');
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
