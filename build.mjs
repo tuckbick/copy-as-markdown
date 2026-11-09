@@ -69,7 +69,7 @@ const html = `<!doctype html>
   textarea { width:100%; height:110px; font:12px/1.4 ui-monospace,Menlo,monospace; background:var(--code); color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:10px; resize:vertical; }
   button { font:inherit; font-size:14px; padding:6px 14px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); cursor:pointer; margin-top:8px; }
   .demo table { border-collapse: collapse; } .demo td, .demo th { border:1px solid var(--line); padding:4px 10px; }
-  .demo blockquote { margin:0; padding-left:14px; border-left:3px solid var(--line); color:var(--muted); }
+  .demo blockquote { margin:0 0 16px; padding-left:14px; border-left:3px solid var(--line); color:var(--muted); }
   .demo pre { background:var(--code); padding:12px; border-radius:8px; overflow:auto; }
   .muted { color: var(--muted); font-size: 14px; }
   .version { font-size: 14px; font-weight: 500; color: var(--muted); vertical-align: middle; margin-left: 4px; }
