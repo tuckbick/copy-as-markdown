@@ -33,6 +33,10 @@ Partial selections keep their context: selecting two list items gives a list, se
 
 Won't work on apps that draw text on a canvas (e.g. Google Docs), since there's no page text to read.
 
+## License
+
+MIT, see [LICENSE](LICENSE). The converter is adapted from Turndown and turndown-plugin-gfm (MIT), and the install page's icon is Twemoji (CC-BY 4.0); details and full license texts are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
 ## Development
 
 The site is published by GitHub Pages straight from the root of `main` (Settings → Pages → *Deploy from a branch*), so pushing a rebuilt `index.html` updates it. `.nojekyll` tells Pages to serve the files as-is, and `CNAME` sets the custom domain (copy-as-markdown.tuckbick.com, a DNS CNAME to `tuckbick.github.io`).

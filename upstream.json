@@ -1,0 +1,27 @@
+{
+  "turndown": {
+    "repo": "mixmark-io/turndown",
+    "version": "v7.2.5",
+    "commit": "b86e2b18539fa4922acf7001902255e2ce5bf0b9",
+    "files": [
+      "src/turndown.js",
+      "src/commonmark-rules.js",
+      "src/collapse-whitespace.js",
+      "src/utilities.js",
+      "src/rules.js",
+      "src/node.js",
+      "src/root-node.js"
+    ]
+  },
+  "turndown-plugin-gfm": {
+    "repo": "mixmark-io/turndown-plugin-gfm",
+    "version": "v1.0.1+61a981b",
+    "commit": "61a981b8c6aaec73bbb8a844d9f8686d0d5f066e",
+    "files": [
+      "src/tables.js",
+      "src/strikethrough.js",
+      "src/task-list-items.js",
+      "src/highlighted-code-block.js"
+    ]
+  }
+}

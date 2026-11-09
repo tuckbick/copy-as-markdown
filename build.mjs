@@ -130,6 +130,10 @@ const html = `<!doctype html>
     <pre><code class="language-js">const x = 1;
 console.log(x);</code></pre>
   </div>
+
+  <footer class="muted" style="margin-top:40px">
+    <p>MIT licensed. The converter is adapted from <a href="https://github.com/mixmark-io/turndown">Turndown</a> and <a href="https://github.com/mixmark-io/turndown-plugin-gfm">turndown-plugin-gfm</a> (MIT). Icon: <a href="https://github.com/jdecked/twemoji">Twemoji</a> 📋, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/THIRD_PARTY_NOTICES.md">Full notices</a>.</p>
+  </footer>
 </main>
 <script>
   (function () {
