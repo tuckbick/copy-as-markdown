@@ -6,7 +6,7 @@ Inspired by [clipboard2markdown](https://github.com/euangoddard/clipboard2markdo
 
 ## Install
 
-Open the install page, **https://tuckbick.github.io/copy-as-markdown/**, and drag the **📋 Copy as Markdown** button to your bookmarks bar. (It's [`index.html`](index.html), published with GitHub Pages; you can also open it locally.)
+Open the install page, **http://tuckbick.com/copy-as-markdown/**, and drag the **📋 Copy as Markdown** button to your bookmarks bar. (It's [`index.html`](index.html), published with GitHub Pages; you can also open it locally.)
 
 If dragging doesn't work (some Safari versions), create any bookmark and replace its URL with the code shown on the install page.
 
