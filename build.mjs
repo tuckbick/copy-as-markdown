@@ -1,4 +1,4 @@
-// Builds the bookmarklet URL from bookmarklet.js and writes install.html.
+// Builds the bookmarklet URL from bookmarklet.js and writes index.html (the install page, served by GitHub Pages).
 // Usage: node build.mjs
 import { readFileSync, writeFileSync } from 'node:fs';
 
@@ -133,5 +133,5 @@ console.log(x);</code></pre>
 </body>
 </html>
 `;
-writeFileSync(new URL('install.html', dir), html);
-console.log('bookmarklet: ' + url.length + ' chars -> bookmarklet.url.txt, install.html, copy-as-markdown-bookmark.html');
+writeFileSync(new URL('index.html', dir), html);
+console.log('bookmarklet: ' + url.length + ' chars -> bookmarklet.url.txt, index.html, copy-as-markdown-bookmark.html');

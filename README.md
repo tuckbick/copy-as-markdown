@@ -6,7 +6,7 @@ Inspired by [clipboard2markdown](https://github.com/euangoddard/clipboard2markdo
 
 ## Install
 
-Open [`install.html`](install.html) in your browser (download it, or enable GitHub Pages for this repo) and drag the **Copy as Markdown** button to your bookmarks bar.
+Open the install page, **https://tuckbick.github.io/copy-as-markdown/**, and drag the **📋 Copy as Markdown** button to your bookmarks bar. (It's [`index.html`](index.html), published with GitHub Pages; you can also open it locally.)
 
 If dragging doesn't work (some Safari versions), create any bookmark and replace its URL with the code shown on the install page.
 
@@ -40,13 +40,15 @@ Won't work on apps that draw text on a canvas (e.g. Google Docs), since there's 
 
 ## Development
 
+The site is published by GitHub Pages straight from the root of `main` (Settings → Pages → *Deploy from a branch*), so pushing a rebuilt `index.html` and `copy-as-markdown-bookmark.html` updates it. `.nojekyll` tells Pages to serve the files as-is.
+
 `bookmarklet.js` is the readable source. After editing it, rebuild the bookmarklet and the install page:
 
 ```bash
 node build.mjs
 ```
 
-This writes `install.html`, the importable `copy-as-markdown-bookmark.html`, and `bookmarklet.url.txt` (the raw `javascript:` URL, git-ignored). The icon comes from `icons/clipboard.svg`; after changing it, regenerate the PNG used for imports (macOS):
+This writes `index.html` (the install page), the importable `copy-as-markdown-bookmark.html`, and `bookmarklet.url.txt` (the raw `javascript:` URL, git-ignored). The icon comes from `icons/clipboard.svg`; after changing it, regenerate the PNG used for imports (macOS):
 
 ```bash
 sips -s format png -z 32 32 icons/clipboard.svg --out icons/clipboard-32.png
