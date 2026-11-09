@@ -10,6 +10,13 @@ Open [`install.html`](install.html) in your browser (download it, or enable GitH
 
 If dragging doesn't work (some Safari versions), create any bookmark and replace its URL with the code shown on the install page.
 
+### Icon
+
+Browsers don't keep a favicon for a bookmarklet you drag to the bar, so there are two ways to get the 📋 icon:
+
+- **Drag:** the dragged bookmark is named "📋 Copy as Markdown", so the emoji shows up in the bar (works in every browser).
+- **Import (Chrome, Edge, Firefox):** import [`copy-as-markdown-bookmark.html`](copy-as-markdown-bookmark.html). Its `ICON=` attribute carries the Twemoji clipboard as a real bookmark icon. This uses the technique from [this gist](https://gist.github.com/vinicius-stutz/29f759031b7e5a444733) and [this Stack Overflow answer](https://stackoverflow.com/questions/521040/how-to-have-favicon-icon-set-when-bookmarklet-dragged-to-toolbar). If the icon doesn't appear right away, click the bookmark once.
+
 ## What it converts
 
 - Headings, bold, italic, strikethrough
@@ -39,7 +46,11 @@ Won't work on apps that draw text on a canvas (e.g. Google Docs), since there's 
 node build.mjs
 ```
 
-This writes `install.html` and `bookmarklet.url.txt` (the raw `javascript:` URL, git-ignored).
+This writes `install.html`, the importable `copy-as-markdown-bookmark.html`, and `bookmarklet.url.txt` (the raw `javascript:` URL, git-ignored). The icon comes from `icons/clipboard.svg`; after changing it, regenerate the PNG used for imports (macOS):
+
+```bash
+sips -s format png -z 32 32 icons/clipboard.svg --out icons/clipboard-32.png
+```
 
 The build fails if the bookmarklet grows past 32,000 characters. Browsers don't publish a bookmark length limit, and long bookmarklets have been reported as cut off in Firefox and failing silently in Safari, so it stays well under that.
 

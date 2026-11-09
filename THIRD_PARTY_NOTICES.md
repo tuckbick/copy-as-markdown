@@ -1,6 +1,14 @@
 # Third-party notices
 
-The HTML-to-Markdown converter in `bookmarklet.js` is adapted from the projects below.
+The HTML-to-Markdown converter in `bookmarklet.js` is adapted from Turndown and collapse-whitespace (below).
+
+## Twemoji 📋 clipboard icon
+
+`icons/clipboard.svg` is the Twemoji "clipboard" emoji (U+1F4CB) from https://github.com/jdecked/twemoji,
+Copyright 2019 Twitter, Inc and other contributors, licensed under CC-BY 4.0:
+https://creativecommons.org/licenses/by/4.0/
+
+`icons/clipboard-32.png` is a 32×32 PNG rendering of that SVG (changed from the original: rasterized).
 
 ## Turndown and turndown-plugin-gfm
 

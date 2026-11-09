@@ -24,12 +24,40 @@ writeFileSync(new URL('bookmarklet.url.txt', dir), url + '\n');
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 
+// ---------- icon ----------
+// icons/clipboard.svg is the Twemoji 📋 (CC-BY 4.0, see THIRD_PARTY_NOTICES.md).
+// icons/clipboard-32.png is the same SVG rasterized, because browsers' bookmark
+// importers decode bitmap icons only. Regenerate it after changing the SVG (macOS):
+//   sips -s format png -z 32 32 icons/clipboard.svg --out icons/clipboard-32.png
+const NAME = 'Copy as Markdown';
+const EMOJI = '📋';
+const svgIcon = readFileSync(new URL('icons/clipboard.svg', dir));
+const pngIcon = readFileSync(new URL('icons/clipboard-32.png', dir));
+const svgDataUri = 'data:image/svg+xml;base64,' + svgIcon.toString('base64');
+const pngDataUri = 'data:image/png;base64,' + pngIcon.toString('base64');
+
+// Bookmark import file (Netscape bookmark format). The ICON attribute is how
+// Chrome, Edge and Firefox store a bookmark's favicon, so importing this file
+// gives the bookmarklet the 📋 icon. Technique from
+// https://gist.github.com/vinicius-stutz/29f759031b7e5a444733
+const bookmarkFile = `<!DOCTYPE NETSCAPE-Bookmark-file-1>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<TITLE>Bookmarks</TITLE>
+<H1>Bookmarks</H1>
+<DL><p>
+    <DT><A HREF="${esc(url)}" ICON="${pngDataUri}">${NAME}</A>
+</DL><p>
+`;
+writeFileSync(new URL('copy-as-markdown-bookmark.html', dir), bookmarkFile);
+
 const html = `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Copy as Markdown</title>
+<link rel="icon" type="image/svg+xml" href="${svgDataUri}">
+<link rel="icon" type="image/png" sizes="32x32" href="${pngDataUri}">
 <style>
   :root { --bg:#f6f7f9; --card:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --accent:#0969da; --code:#eff2f5; }
   @media (prefers-color-scheme: dark) { :root { --bg:#0d1117; --card:#161b22; --fg:#e6edf3; --muted:#9198a1; --line:#30363d; --accent:#4493f8; --code:#1f242c; } }
@@ -56,13 +84,16 @@ const html = `<!doctype html>
   <h1>Copy as Markdown</h1>
   <p class="lead">Select text on any page, click the bookmark, and the selection lands on your clipboard as Markdown.</p>
 
-  <p><a class="drag" href="${esc(url)}" onclick="alert('Drag this button to your bookmarks bar instead of clicking it.'); return false;">⇣ Copy as Markdown</a></p>
+  <p><a class="drag" href="${esc(url)}" onclick="alert('Drag this button to your bookmarks bar instead of clicking it.'); return false;">${EMOJI} ${NAME}</a></p>
 
   <h2>Install</h2>
   <div class="card">
+    <p><b>Quickest:</b> show your bookmarks bar (<code>⌘⇧B</code> on Mac, <code>Ctrl+Shift+B</code> on Windows) and drag the blue button above onto it. The ${EMOJI} in its name acts as the icon.</p>
+    <p><b>With a real ${EMOJI} icon</b> (Chrome, Edge, Firefox): browsers don't keep an icon when you drag a bookmarklet, but they do when you import one.</p>
     <ol>
-      <li>Show your bookmarks bar (<code>⌘⇧B</code> on Mac, <code>Ctrl+Shift+B</code> on Windows).</li>
-      <li>Drag the blue <b>Copy as Markdown</b> button above onto the bookmarks bar.</li>
+      <li><a href="copy-as-markdown-bookmark.html" download="copy-as-markdown-bookmark.html">Download the bookmark file</a>.</li>
+      <li>Import it. <b>Chrome / Edge:</b> Bookmarks → Import bookmarks and settings → <i>Bookmarks HTML File</i>. <b>Firefox:</b> Bookmarks → Manage Bookmarks → Import and Backup → <i>Import Bookmarks from HTML</i>.</li>
+      <li>Drag <b>${NAME}</b> from the imported folder onto your bookmarks bar, then delete the folder. If the icon doesn't show at first, click the bookmark once.</li>
     </ol>
     <p class="muted">Drag not working (e.g. Safari)? Bookmark any page, edit that bookmark, and replace its URL with this:</p>
     <textarea id="code" readonly>${esc(url)}</textarea>
@@ -103,4 +134,4 @@ console.log(x);</code></pre>
 </html>
 `;
 writeFileSync(new URL('install.html', dir), html);
-console.log('bookmarklet: ' + url.length + ' chars -> bookmarklet.url.txt, install.html');
+console.log('bookmarklet: ' + url.length + ' chars -> bookmarklet.url.txt, install.html, copy-as-markdown-bookmark.html');
