@@ -57,6 +57,10 @@ npm run build
 
 The tests compare the port's output with the real Turndown (pinned in `package.json`) for HTML that doesn't touch an intentional difference, and check the differences and selection handling separately. CI runs them on every push and fails if the committed `index.html` is out of date.
 
+### Versions and releases
+
+The version is in `package.json` and shown on the install page; installed bookmarks carry it in their URL (`/* Copy as Markdown v1.0.0 …`). Changes are listed in [CHANGELOG.md](CHANGELOG.md). Pushing a tag such as `v1.1.0` runs the Release workflow, which checks the tag against `package.json`, runs the tests, and publishes a [GitHub release](https://github.com/tuckbick/copy-as-markdown/releases) with the changelog notes and the bookmarklet URL attached. The release steps are in [AGENTS.md](AGENTS.md).
+
 ### Keeping up with Turndown
 
 `upstream.json` records the exact Turndown and turndown-plugin-gfm versions the port is based on. A weekly GitHub Action (`.github/workflows/upstream.yml`) runs `npm run check-upstream` and opens an issue labeled `upstream` when a ported file has changed. To act on it, ask Claude Code (or another coding agent) in this repo to "update from Turndown"; the steps it follows are in [AGENTS.md](AGENTS.md), which `CLAUDE.md` points to.

@@ -13,7 +13,7 @@
 // Rules for this file: only full-line // comments, and end statements with semicolons
 // (the build joins trimmed lines without a real minifier).
 (function () {
-  /* Copy as Markdown (MIT, (c) 2026 Tucker Bickler). Converter adapted from Turndown (MIT, (c) 2017 Dom Christie), turndown-plugin-gfm (MIT, (c) 2017 Dom Christie) and collapse-whitespace (MIT, (c) 2014 Luc Thevenard). */
+  /* Copy as Markdown v__VERSION__ (MIT, (c) 2026 Tucker Bickler). Converter adapted from Turndown (MIT, (c) 2017 Dom Christie), turndown-plugin-gfm (MIT, (c) 2017 Dom Christie) and collapse-whitespace (MIT, (c) 2014 Luc Thevenard). */
   'use strict';
 
   // ===================== options (Turndown option names) =====================

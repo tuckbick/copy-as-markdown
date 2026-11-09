@@ -5,7 +5,14 @@ import { readFileSync, writeFileSync } from 'node:fs';
 const dir = new URL('.', import.meta.url);
 const src = readFileSync(new URL('bookmarklet.js', dir), 'utf8');
 
+// The version lives in package.json; it's stamped into the bookmarklet's notice
+// comment (so an installed bookmark shows its version in its URL) and the install page.
+const { version } = JSON.parse(readFileSync(new URL('package.json', dir), 'utf8'));
+const upstream = JSON.parse(readFileSync(new URL('upstream.json', dir), 'utf8'));
+const turndownVersion = upstream.turndown.version;
+
 const code = src
+  .replace(/__VERSION__/g, version)
   .split('\n')
   .filter((l) => !l.includes('@test-only'))
   .map((l) => l.trim())
@@ -65,6 +72,7 @@ const html = `<!doctype html>
   .demo blockquote { margin:0; padding-left:14px; border-left:3px solid var(--line); color:var(--muted); }
   .demo pre { background:var(--code); padding:12px; border-radius:8px; overflow:auto; }
   .muted { color: var(--muted); font-size: 14px; }
+  .version { font-size: 14px; font-weight: 500; color: var(--muted); vertical-align: middle; margin-left: 4px; }
   .picker { padding:14px 16px; display:grid; grid-template-columns:auto 1fr; gap:10px 14px; align-items:start; }
   .h2-note { font-size:13px; font-weight:500; color:var(--muted); margin-left:6px; }
   .picker-note { grid-column:1 / -1; margin:2px 0 0; font-size:13px; }
@@ -83,7 +91,7 @@ const html = `<!doctype html>
 </head>
 <body>
 <main>
-  <h1>Copy as Markdown</h1>
+  <h1>Copy as Markdown <span class="version">v${version}</span></h1>
   <p class="lead">Select text on any page, click the bookmark, and the selection lands on your clipboard as Markdown.</p>
 
   <h2 id="configure">Configure <span class="h2-note">optional</span></h2>
@@ -132,6 +140,7 @@ console.log(x);</code></pre>
   </div>
 
   <footer class="muted" style="margin-top:40px">
+    <p>Version ${version}, converter based on Turndown ${turndownVersion}. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/CHANGELOG.md">Changelog</a> · <a href="https://github.com/tuckbick/copy-as-markdown/releases">Releases</a>. To check which version you have installed, edit the bookmark: its URL starts with <code>javascript:(function () {/* Copy as Markdown v…</code>.</p>
     <p>MIT licensed. The converter is adapted from <a href="https://github.com/mixmark-io/turndown">Turndown</a> and <a href="https://github.com/mixmark-io/turndown-plugin-gfm">turndown-plugin-gfm</a> (MIT). Icon: <a href="https://github.com/jdecked/twemoji">Twemoji</a> 📋, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/THIRD_PARTY_NOTICES.md">Full notices</a>.</p>
   </footer>
 </main>
@@ -213,4 +222,4 @@ console.log(x);</code></pre>
 </html>
 `;
 writeFileSync(new URL('index.html', dir), html);
-console.log('bookmarklet: ' + url.length + ' chars -> bookmarklet.url.txt, index.html');
+console.log(`v${version}: bookmarklet ${url.length} chars -> bookmarklet.url.txt, index.html`);

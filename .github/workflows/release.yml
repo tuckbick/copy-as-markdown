@@ -1,0 +1,49 @@
+# Publishes a GitHub release when a version tag (v1.2.3) is pushed.
+# The tag must match package.json's version and have a CHANGELOG.md entry.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Check tag, build and changelog
+        id: prep
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json version $version"; exit 1
+          fi
+          npm run build
+          git diff --exit-code -- index.html || (echo "index.html is out of date for this tag"; exit 1)
+          # Release notes: the CHANGELOG section for this version.
+          awk -v v="$version" '
+            $0 ~ "^## " v "( |$)" { on=1; next }
+            on && /^## / { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then echo "No CHANGELOG.md entry for $version"; exit 1; fi
+          printf '\nInstall or update: https://copy-as-markdown.tuckbick.com/\n' >> notes.md
+          cp bookmarklet.url.txt "copy-as-markdown-v$version.txt"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "Copy as Markdown $GITHUB_REF_NAME" \
+            --notes-file notes.md \
+            "copy-as-markdown-v${{ steps.prep.outputs.version }}.txt#Bookmarklet URL (paste as a bookmark's address)"
