@@ -10,12 +10,7 @@ Open the install page, **https://copy-as-markdown.tuckbick.com/**, and drag the 
 
 If dragging doesn't work (some Safari versions), create any bookmark and replace its URL with the code shown on the install page.
 
-### Icon
-
-Browsers don't keep a favicon for a bookmarklet you drag to the bar, so there are two ways to get the 📋 icon:
-
-- **Drag:** the dragged bookmark is named "📋 Copy as Markdown", so the emoji shows up in the bar (works in every browser).
-- **Import (Chrome, Edge, Firefox):** import [`copy-as-markdown-bookmark.html`](copy-as-markdown-bookmark.html). Its `ICON=` attribute carries the Twemoji clipboard as a real bookmark icon. This uses the technique from [this gist](https://gist.github.com/vinicius-stutz/29f759031b7e5a444733) and [this Stack Overflow answer](https://stackoverflow.com/questions/521040/how-to-have-favicon-icon-set-when-bookmarklet-dragged-to-toolbar). If the icon doesn't appear right away, click the bookmark once.
+Browsers don't keep a favicon for `javascript:` bookmarks, so the bookmark is named "📋 Copy as Markdown" and the emoji serves as its icon.
 
 ## What it converts
 
@@ -40,7 +35,7 @@ Won't work on apps that draw text on a canvas (e.g. Google Docs), since there's 
 
 ## Development
 
-The site is published by GitHub Pages straight from the root of `main` (Settings → Pages → *Deploy from a branch*), so pushing a rebuilt `index.html` and `copy-as-markdown-bookmark.html` updates it. `.nojekyll` tells Pages to serve the files as-is, and `CNAME` sets the custom domain (copy-as-markdown.tuckbick.com, a DNS CNAME to `tuckbick.github.io`).
+The site is published by GitHub Pages straight from the root of `main` (Settings → Pages → *Deploy from a branch*), so pushing a rebuilt `index.html` updates it. `.nojekyll` tells Pages to serve the files as-is, and `CNAME` sets the custom domain (copy-as-markdown.tuckbick.com, a DNS CNAME to `tuckbick.github.io`).
 
 `bookmarklet.js` is the readable source. After editing it, rebuild the bookmarklet and the install page:
 
@@ -48,11 +43,7 @@ The site is published by GitHub Pages straight from the root of `main` (Settings
 node build.mjs
 ```
 
-This writes `index.html` (the install page), the importable `copy-as-markdown-bookmark.html`, and `bookmarklet.url.txt` (the raw `javascript:` URL, git-ignored). The icon comes from `icons/clipboard.svg`; after changing it, regenerate the PNG used for imports (macOS):
-
-```bash
-sips -s format png -z 32 32 icons/clipboard.svg --out icons/clipboard-32.png
-```
+This writes `index.html` (the install page) and `bookmarklet.url.txt` (the raw `javascript:` URL, git-ignored). The install page's favicon is `icons/clipboard.svg`.
 
 The build fails if the bookmarklet grows past 32,000 characters. Browsers don't publish a bookmark length limit, and long bookmarklets have been reported as cut off in Firefox and failing silently in Safari, so it stays well under that.
 

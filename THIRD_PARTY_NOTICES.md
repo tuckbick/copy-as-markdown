@@ -8,8 +8,6 @@ The HTML-to-Markdown converter in `bookmarklet.js` is adapted from Turndown and 
 Copyright 2019 Twitter, Inc and other contributors, licensed under CC-BY 4.0:
 https://creativecommons.org/licenses/by/4.0/
 
-`icons/clipboard-32.png` is a 32×32 PNG rendering of that SVG (changed from the original: rasterized).
-
 ## Turndown and turndown-plugin-gfm
 
 https://github.com/mixmark-io/turndown and https://github.com/mixmark-io/turndown-plugin-gfm
