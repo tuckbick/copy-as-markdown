@@ -31,6 +31,11 @@ writeFileSync(new URL('bookmarklet.url.txt', dir), url + '\n');
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 
+// ---------- search ----------
+// Shown as the headline and snippet in search results.
+const TITLE = 'Copy as Markdown: Bookmarklet to Copy Selected Text as Markdown';
+const DESCRIPTION = 'Free bookmarklet: select text on any web page, click it, and get clean Markdown on your clipboard. Keeps headings, links, lists, tables and code. No extension needed.';
+
 // ---------- icon ----------
 // Browsers don't keep a favicon for javascript: bookmarks, so the bookmarklet's
 // "icon" is the emoji at the start of its name. icons/clipboard.svg (the Twemoji 📋,
@@ -51,7 +56,8 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copy as Markdown</title>
+<title>${esc(TITLE)}</title>
+<meta name="description" content="${esc(DESCRIPTION)}">
 <link rel="icon" type="image/svg+xml" href="${svgDataUri}">
 <style>
   :root { --bg:#f6f7f9; --card:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --accent:#0969da; --code:#eff2f5; }
