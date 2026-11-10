@@ -103,7 +103,8 @@ const html = `<!doctype html>
   * { box-sizing: border-box; }
   body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
   a { color:var(--link); }
-  main { max-width: 760px; margin: 0 auto; padding: 40px 16px 80px; }
+  main { max-width: 760px; margin: 0 auto; padding: 40px 16px 0; }
+  .site-footer { max-width: 760px; margin: 40px auto 0; padding: 0 16px 80px; }
   h1 { font-size: 28px; margin: 0 0 4px; }
   h2 { font-size: 18px; margin: 36px 0 8px; }
   p.lead { color: var(--muted); margin: 0 0 28px; }
@@ -208,12 +209,12 @@ console.log(x);</code></pre>
     <h3>How it works</h3>
     <p>The conversion runs entirely in your browser, using a compact port of the <a href="https://github.com/mixmark-io/turndown">Turndown</a> HTML-to-Markdown converter. Nothing is sent anywhere, there's no extension to install, and it works on sites with strict security policies because it doesn't load any outside scripts. It works in Chrome, Edge, Firefox, Brave and other desktop browsers that support bookmarklets. It can't read apps that draw text on a canvas, such as Google Docs.</p>
   </div>
+</main>
 
-  <footer class="muted" style="margin-top:40px">
+<footer class="site-footer muted">
     <p>Version ${version}, converter based on Turndown ${turndownVersion}. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/CHANGELOG.md">Changelog</a> · <a href="https://github.com/tuckbick/copy-as-markdown/releases">Releases</a>. To check which version you have installed, edit the bookmark: its URL starts with <code>javascript:(function () {/* Copy as Markdown v…</code>.</p>
     <p>MIT licensed. The converter is adapted from <a href="https://github.com/mixmark-io/turndown">Turndown</a> and <a href="https://github.com/mixmark-io/turndown-plugin-gfm">turndown-plugin-gfm</a> (MIT). Icon: <a href="https://github.com/jdecked/twemoji">Twemoji</a> 📋, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/THIRD_PARTY_NOTICES.md">Full notices</a>.</p>
-  </footer>
-</main>
+</footer>
 <script>
   (function () {
     var EMOJIS = ${JSON.stringify(EMOJIS)};
