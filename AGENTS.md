@@ -20,6 +20,14 @@ served by GitHub Pages at https://copy-as-markdown.tuckbick.com/).
   file name). Keep it that way, and mark every intentional difference with `DIFF:`.
 - The build fails above 32,000 characters (browser bookmark limits).
 
+## Accessibility
+
+Target is WCAG 2.2 AA; see `docs/accessibility.md`. After changing colors, layout or controls
+on the install page (in `build.mjs`), re-run `scripts/a11y-check.js` in the browser in light and
+dark mode, Tab through the page, and update the doc's results. Changes to the bookmarklet's
+notice or fallback dialog must keep their roles, names and focus handling. Track problems as
+GitHub issues with the `accessibility` label.
+
 ## Updating from Turndown
 
 Triggered by an "upstream" issue from the monthly workflow, or by being asked to check for

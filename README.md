@@ -33,6 +33,10 @@ Partial selections keep their context: selecting two list items gives a list, se
 
 Won't work on apps that draw text on a canvas (e.g. Google Docs), since there's no page text to read.
 
+## Accessibility
+
+The install page and the bookmarklet's on-page UI aim for WCAG 2.2 AA. What's been tested, the results, and how to re-run the checks are in [docs/accessibility.md](docs/accessibility.md); open problems have the [`accessibility` label](https://github.com/tuckbick/copy-as-markdown/issues?q=label%3Aaccessibility).
+
 ## License
 
 MIT, see [LICENSE](LICENSE). The converter is adapted from Turndown and turndown-plugin-gfm (MIT), and the install page's icon is Twemoji (CC-BY 4.0); details and full license texts are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
