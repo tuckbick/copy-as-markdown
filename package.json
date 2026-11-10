@@ -1,6 +1,6 @@
 {
   "name": "copy-as-markdown",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Bookmarklet: copy the selected text on any page to your clipboard as Markdown",
   "license": "MIT",
