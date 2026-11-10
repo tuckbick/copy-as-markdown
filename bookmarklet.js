@@ -730,29 +730,80 @@
   // ===================== UI =====================
   const FONT = 'font:500 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
 
-  function toast (msg, bad) {
-    const d = document.createElement('div');
-    d.textContent = msg;
-    d.setAttribute('style', 'all:initial;position:fixed;z-index:2147483647;right:16px;bottom:16px;max-width:360px;padding:10px 14px;border-radius:8px;' + FONT + 'color:#fff;background:' + (bad ? '#b42318' : '#1f2328') + ';box-shadow:0 6px 20px rgba(0,0,0,.25);transition:opacity .3s;opacity:1');
-    (document.body || document.documentElement).appendChild(d);
-    setTimeout(function () { d.style.opacity = '0'; }, bad ? 3500 : 1800);
-    setTimeout(function () { d.remove(); }, bad ? 4000 : 2300);
+  function el (tag, style, attrs) {
+    const e = document.createElement(tag);
+    e.setAttribute('style', 'all:initial;' + style);
+    for (const k in attrs || {}) e.setAttribute(k, attrs[k]);
+    return e;
   }
 
+  function root () { return document.body || document.documentElement; }
+
+  // On-page notice. It's a live region (role=status, or role=alert for errors) so
+  // screen readers announce it. The text is added after the region is in the page,
+  // because some screen readers only announce changes to an existing region.
+  function toast (msg, bad) {
+    const d = el('div', 'position:fixed;z-index:2147483647;right:16px;bottom:16px;max-width:360px;padding:10px 14px;border-radius:8px;' + FONT + 'color:#fff;background:' + (bad ? '#b42318' : '#1f2328') + ';box-shadow:0 6px 20px rgba(0,0,0,.25);transition:opacity .3s;opacity:1', {
+      role: bad ? 'alert' : 'status',
+      'aria-live': bad ? 'assertive' : 'polite',
+      'aria-atomic': 'true'
+    });
+    root().appendChild(d);
+    setTimeout(function () { d.textContent = msg; }, 50);
+    setTimeout(function () { d.style.opacity = '0'; }, bad ? 5500 : 3000);
+    setTimeout(function () { d.remove(); }, bad ? 6000 : 3500);
+    return d;
+  }
+
+  // Fallback when the page blocks the clipboard: a modal dialog with the Markdown
+  // selected. It has a name and description, keeps Tab inside, closes on Escape,
+  // the Close button or a click outside, and returns focus to where it was.
   function manual (text) {
-    const o = document.createElement('div');
-    o.setAttribute('style', 'all:initial;position:fixed;inset:0;z-index:2147483646;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center');
-    const ta = document.createElement('textarea');
+    const id = 'cam-' + Math.random().toString(36).slice(2);
+    const previous = document.activeElement;
+    const o = el('div', 'position:fixed;inset:0;z-index:2147483646;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center');
+    const box = el('div', 'box-sizing:border-box;width:min(760px,92vw);max-height:90vh;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:12px;background:#fff;color:#1f2328;box-shadow:0 12px 40px rgba(0,0,0,.35);' + FONT, {
+      role: 'dialog',
+      'aria-modal': 'true',
+      'aria-labelledby': id + '-title',
+      'aria-describedby': id + '-desc'
+    });
+    const title = el('div', 'display:block;font:600 15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1f2328', { id: id + '-title' });
+    title.textContent = 'Copy as Markdown';
+    const desc = el('div', 'display:block;' + FONT + 'color:#1f2328', { id: id + '-desc' });
+    desc.textContent = 'This page blocked clipboard access. The Markdown below is selected: press Cmd+C (Mac) or Ctrl+C to copy it, then close this box.';
+    const ta = el('textarea', 'display:block;box-sizing:border-box;width:100%;height:55vh;padding:12px;border:1px solid #818b98;border-radius:8px;background:#fff;color:#1f2328;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow:auto', {
+      'aria-label': 'Markdown',
+      readonly: ''
+    });
     ta.value = text;
-    ta.setAttribute('style', 'all:initial;box-sizing:border-box;width:min(760px,92vw);height:65vh;padding:14px;border-radius:10px;background:#fff;color:#1f2328;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow:auto');
-    o.appendChild(ta);
-    function close () { o.remove(); }
+    const btn = el('button', 'display:inline-block;align-self:flex-end;padding:6px 16px;border:1px solid #818b98;border-radius:8px;background:#fff;color:#1f2328;cursor:pointer;' + FONT, { type: 'button' });
+    btn.textContent = 'Close';
+    box.appendChild(title);
+    box.appendChild(desc);
+    box.appendChild(ta);
+    box.appendChild(btn);
+    o.appendChild(box);
+
+    function close () {
+      o.remove();
+      if (previous && previous.focus && document.contains(previous)) {
+        try { previous.focus(); } catch (e) {}
+      }
+    }
+    btn.addEventListener('click', close);
     o.addEventListener('click', function (e) { if (e.target === o) close(); });
-    ta.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
-    (document.body || document.documentElement).appendChild(o);
+    box.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.key !== 'Tab') return;
+      const first = ta, last = btn;
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    root().appendChild(o);
     ta.focus();
     ta.select();
-    toast('This page blocked clipboard access. The Markdown is selected: press Cmd/Ctrl+C, then Esc.', true);
+    return { overlay: o, dialog: box, textarea: ta, close: btn };
   }
 
   function copy (text, done, fail) {
@@ -771,7 +822,7 @@
     else fail();
   }
 
-  if (window.__MD_TEST__) { window.__selectionToMarkdown = selectionToMarkdown; return; } // @test-only
+  if (window.__MD_TEST__) { window.__selectionToMarkdown = selectionToMarkdown; window.__ui = { toast: toast, manual: manual }; return; } // @test-only
 
   let md;
   try { md = selectionToMarkdown(); } catch (e) { toast('Copy as Markdown failed: ' + e.message, true); return; }

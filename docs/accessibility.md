@@ -67,12 +67,20 @@ Tabbed through the whole page with a real keyboard.
 
 At a 320px-wide window nothing scrolls sideways and nothing is cut off. Pass.
 
-### 6. Bookmarklet UI (reviewed in code, not tested with assistive technology)
+### 6. Bookmarklet UI
 
-| Check | Result |
-| --- | --- |
-| "Copied as Markdown" notice announced to screen readers (WCAG 4.1.3) | **Fail**: no live region ([#3](https://github.com/tuckbick/copy-as-markdown/issues/3)) |
-| Fallback copy box is an accessible dialog: role, name, focus kept inside, focus returned on close (WCAG 4.1.2, 2.4.3) | **Fail** ([#4](https://github.com/tuckbick/copy-as-markdown/issues/4)) |
+Reviewed in code (both failed: [#3](https://github.com/tuckbick/copy-as-markdown/issues/3),
+[#4](https://github.com/tuckbick/copy-as-markdown/issues/4)), fixed in v1.1.0, then checked with
+the tests in `test/ui.test.mjs` and by hand in the browser with a real keyboard. Not yet checked
+with a screen reader (#5).
+
+| Check | v1.0.0 | v1.1.0 |
+| --- | --- | --- |
+| "Copied" and error notices announced to screen readers (WCAG 4.1.3): `role="status"` / `role="alert"`, text added after the live region exists | Fail | Pass |
+| Fallback copy box has `role="dialog"`, `aria-modal`, a name ("Copy as Markdown") and a description (WCAG 4.1.2) | Fail | Pass |
+| Text box in the dialog is labeled; dialog has a visible Close button | Fail | Pass |
+| Focus starts on the selected Markdown; Tab / Shift+Tab stay inside the dialog (WCAG 2.4.3) | Fail (Tab left the dialog) | Pass |
+| Escape, Close or a click outside closes it, and focus returns to where it was | Partly (no focus return, no Close button) | Pass |
 
 ### Not tested yet
 
