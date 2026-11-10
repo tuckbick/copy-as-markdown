@@ -73,6 +73,8 @@ const html = `<!doctype html>
   ol { padding-left: 22px; } li { margin: 4px 0; }
   code { background:var(--code); padding:1px 5px; border-radius:4px; font-size:.9em; }
   textarea { width:100%; height:110px; font:12px/1.4 ui-monospace,Menlo,monospace; background:var(--code); color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:10px; resize:vertical; }
+  details summary { cursor:pointer; margin-top:8px; }
+  details[open] summary { margin-bottom:4px; }
   button { font:inherit; font-size:14px; padding:6px 14px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); cursor:pointer; margin-top:8px; }
   .demo table { border-collapse: collapse; } .demo td, .demo th { border:1px solid var(--line); padding:4px 10px; }
   .demo blockquote { margin:0 0 16px; padding-left:14px; border-left:3px solid var(--line); color:var(--muted); }
@@ -119,9 +121,12 @@ const html = `<!doctype html>
         </div>
       </li>
     </ol>
-    <p class="muted">Drag not working (e.g. Safari)? Bookmark any page, edit that bookmark, name it <b class="current-name">${EMOJI} ${NAME}</b>, and replace its URL with this:</p>
-    <textarea id="code" readonly>${esc(url)}</textarea>
-    <button id="copybtn">Copy bookmarklet code</button>
+    <details id="code-details">
+      <summary class="muted">Drag not working (e.g. Safari)? Add it by hand</summary>
+      <p class="muted">Bookmark any page, edit that bookmark, name it <b class="current-name">${EMOJI} ${NAME}</b>, and replace its URL with this:</p>
+      <textarea id="code" readonly aria-label="Bookmarklet code"></textarea>
+      <button id="copybtn">Copy bookmarklet code</button>
+    </details>
   </div>
 
   <h2>Try it here</h2>
@@ -216,8 +221,18 @@ console.log(x);</code></pre>
     render();
   })();
 
-  document.getElementById('copybtn').addEventListener('click', function () {
+  // The code box is filled from the drag button's link when opened, so the
+  // ~22 KB bookmarklet isn't in the page twice (it would drown out the page's
+  // text for search engines).
+  function fillCode () {
     var ta = document.getElementById('code');
+    if (!ta.value) ta.value = document.getElementById('drag').getAttribute('href');
+    return ta;
+  }
+  document.getElementById('code-details').addEventListener('toggle', function () { if (this.open) fillCode(); });
+
+  document.getElementById('copybtn').addEventListener('click', function () {
+    var ta = fillCode();
     ta.select();
     var done = function () { this.textContent = 'Copied!'; }.bind(this);
     if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(done, function () { document.execCommand('copy'); done(); });
