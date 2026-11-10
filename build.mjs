@@ -39,7 +39,9 @@ const DESCRIPTION = 'Free bookmarklet: select text on any web page, click it, an
 // ---------- icon ----------
 // Browsers don't keep a favicon for javascript: bookmarks, so the bookmarklet's
 // "icon" is the emoji at the start of its name. icons/clipboard.svg (the Twemoji 📋,
-// CC-BY 4.0, see THIRD_PARTY_NOTICES.md) is the install page's own favicon.
+// CC-BY 4.0, see THIRD_PARTY_NOTICES.md) is the install page's own favicon. It's
+// linked as a file rather than inlined: search engines only show favicons they can
+// fetch from their own URL.
 const NAME = 'Copy as Markdown';
 const EMOJI = '📋';
 
@@ -48,8 +50,6 @@ const EMOJI = '📋';
 // entry in each list is the default.
 const EMOJIS = ['📋', '📝', '✂️', '⬇️', '🔽', ''];
 const NAMES = [NAME, 'MD', 'Markdown', 'Copy as MD', 'Copy MD', 'Selection → MD', 'Markdownify', ''];
-const svgIcon = readFileSync(new URL('icons/clipboard.svg', dir));
-const svgDataUri = 'data:image/svg+xml;base64,' + svgIcon.toString('base64');
 
 const html = `<!doctype html>
 <html lang="en">
@@ -58,7 +58,7 @@ const html = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(TITLE)}</title>
 <meta name="description" content="${esc(DESCRIPTION)}">
-<link rel="icon" type="image/svg+xml" href="${svgDataUri}">
+<link rel="icon" type="image/svg+xml" href="/icons/clipboard.svg">
 <style>
   :root { --bg:#f6f7f9; --card:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --accent:#0969da; --code:#eff2f5; }
   @media (prefers-color-scheme: dark) { :root { --bg:#0d1117; --card:#161b22; --fg:#e6edf3; --muted:#9198a1; --line:#30363d; --accent:#4493f8; --code:#1f242c; } }
