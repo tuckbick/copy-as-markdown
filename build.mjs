@@ -98,22 +98,23 @@ const html = `<!doctype html>
 <script type="application/ld+json">${JSON.stringify(structuredData).replace(/</g, '\\u003c')}</script>
 <link rel="icon" type="image/svg+xml" href="/icons/clipboard.svg">
 <style>
-  :root { --bg:#f6f7f9; --card:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --accent:#0969da; --code:#eff2f5; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#0d1117; --card:#161b22; --fg:#e6edf3; --muted:#9198a1; --line:#30363d; --accent:#4493f8; --code:#1f242c; } }
+  :root { --bg:#f6f7f9; --card:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --accent:#0969da; --code:#eff2f5; --link:#0969da; --button:#0969da; --accent-text:#0550ae; --control:#818b98; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0d1117; --card:#161b22; --fg:#e6edf3; --muted:#9198a1; --line:#30363d; --accent:#4493f8; --code:#1f242c; --link:#4493f8; --button:#1a5fd0; --accent-text:#4493f8; --control:#6e7681; } }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  a { color:var(--link); }
   main { max-width: 760px; margin: 0 auto; padding: 40px 16px 80px; }
   h1 { font-size: 28px; margin: 0 0 4px; }
   h2 { font-size: 18px; margin: 36px 0 8px; }
   p.lead { color: var(--muted); margin: 0 0 28px; }
-  .drag { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:10px; background:var(--accent); color:#fff; font-weight:600; text-decoration:none; cursor:grab; box-shadow:0 2px 8px rgba(0,0,0,.15); }
+  .drag { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:10px; background:var(--button); color:#fff; font-weight:600; text-decoration:none; cursor:grab; box-shadow:0 2px 8px rgba(0,0,0,.15); }
   .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; }
   ol { padding-left: 22px; } li { margin: 4px 0; }
   code { background:var(--code); padding:1px 5px; border-radius:4px; font-size:.9em; }
   textarea { width:100%; height:110px; font:12px/1.4 ui-monospace,Menlo,monospace; background:var(--code); color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:10px; resize:vertical; }
   details summary { cursor:pointer; margin-top:8px; }
   details[open] summary { margin-bottom:4px; }
-  button { font:inherit; font-size:14px; padding:6px 14px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); cursor:pointer; margin-top:8px; }
+  button { font:inherit; font-size:14px; padding:6px 14px; border-radius:8px; border:1px solid var(--control); background:var(--card); color:var(--fg); cursor:pointer; margin-top:8px; }
   .demo table { border-collapse: collapse; } .demo td, .demo th { border:1px solid var(--line); padding:4px 10px; }
   .demo blockquote { margin:0 0 16px; padding-left:14px; border-left:3px solid var(--line); color:var(--muted); }
   .demo pre { background:var(--code); padding:12px; border-radius:8px; overflow:auto; }
@@ -128,10 +129,10 @@ const html = `<!doctype html>
   .chip:disabled { opacity:.4; cursor:not-allowed; }
   .picker-label { font-size:13px; color:var(--muted); margin:0; padding-top:4px; }
   .chips { display:flex; flex-wrap:wrap; gap:6px; }
-  .chip { font:inherit; font-size:14px; margin:0; padding:3px 10px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--fg); cursor:pointer; min-width:36px; }
-  .chip[aria-pressed="true"] { border-color:var(--accent); color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent); font-weight:600; }
+  .chip { font:inherit; font-size:14px; margin:0; padding:3px 10px; border-radius:999px; border:1px solid var(--control); background:transparent; color:var(--fg); cursor:pointer; min-width:36px; }
+  .chip[aria-pressed="true"] { border-color:var(--accent); color:var(--accent-text); background:color-mix(in srgb, var(--accent) 12%, transparent); font-weight:600; }
   .chip:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-  .custom { font:inherit; font-size:14px; padding:3px 10px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--fg); width:160px; max-width:100%; }
+  .custom { font:inherit; font-size:14px; padding:3px 10px; border-radius:999px; border:1px solid var(--control); background:transparent; color:var(--fg); width:160px; max-width:100%; }
   .custom:focus { outline:2px solid var(--accent); outline-offset:1px; }
   .drag-zone { margin:12px 0 6px; }
   .drag-zone .drag { font-size:18px; padding:16px 28px; border-radius:12px; min-height:58px; }
