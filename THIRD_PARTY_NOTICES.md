@@ -8,7 +8,7 @@ image from the projects below, under their own licenses.
 | [Turndown](https://github.com/mixmark-io/turndown) | Converter in `bookmarklet.js` (adapted port) | v7.2.5 | MIT |
 | [turndown-plugin-gfm](https://github.com/mixmark-io/turndown-plugin-gfm) | Tables, strikethrough, task lists, highlighted code in `bookmarklet.js` (adapted port) | master @ `61a981b` (after v1.0.1) | MIT |
 | collapse-whitespace (as included in Turndown) | Whitespace handling in `bookmarklet.js` (adapted port) | from Turndown v7.2.5 | MIT |
-| [Twemoji](https://github.com/jdecked/twemoji) | `icons/clipboard.svg`, the install page's favicon | v17.0.3 | CC-BY 4.0 (graphics) |
+| [Twemoji](https://github.com/jdecked/twemoji) | `icons/clipboard.svg` (the install page's favicon) and `icons/clipboard-512.png` (its link-preview image) | v17.0.3 | CC-BY 4.0 (graphics) |
 
 The exact upstream versions the port tracks are recorded in [`upstream.json`](upstream.json).
 
@@ -22,7 +22,7 @@ comes from its converter settings.
 ## Twemoji 📋 clipboard icon
 
 `icons/clipboard.svg` is the Twemoji "clipboard" emoji (U+1F4CB) from https://github.com/jdecked/twemoji
-(v17.0.3), unmodified.
+(v17.0.3), unmodified. `icons/clipboard-512.png` is a 512×512 PNG rendering of it (changed from the original: rasterized).
 
 Copyright 2019 Twitter, Inc and other contributors. Graphics licensed under CC-BY 4.0:
 https://creativecommons.org/licenses/by/4.0/

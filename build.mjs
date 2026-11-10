@@ -35,6 +35,32 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, 
 // Shown as the headline and snippet in search results.
 const TITLE = 'Copy as Markdown: Bookmarklet to Copy Selected Text as Markdown';
 const DESCRIPTION = 'Free bookmarklet: select text on any web page, click it, and get clean Markdown on your clipboard. Keeps headings, links, lists, tables and code. No extension needed.';
+// The one address search engines should index (the github.io URL redirects here).
+const SITE_URL = 'https://copy-as-markdown.tuckbick.com/';
+// Link-preview image: icons/clipboard.svg rendered as PNG, since most sites don't
+// show SVG previews. Regenerate after changing the SVG (macOS):
+//   sips -s format png -z 512 512 icons/clipboard.svg --out icons/clipboard-512.png
+const SHARE_IMAGE = SITE_URL + 'icons/clipboard-512.png';
+
+// Structured data: describes the page as a free web tool. No ratings or reviews,
+// since there aren't any to report.
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Copy as Markdown',
+  description: DESCRIPTION,
+  url: SITE_URL,
+  image: SHARE_IMAGE,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'A desktop web browser that supports bookmarklets',
+  softwareVersion: version,
+  license: 'https://opensource.org/licenses/MIT',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  author: { '@type': 'Person', name: 'Tucker Bickler' },
+  sameAs: ['https://github.com/tuckbick/copy-as-markdown']
+};
 
 // ---------- icon ----------
 // Browsers don't keep a favicon for javascript: bookmarks, so the bookmarklet's
@@ -58,6 +84,18 @@ const html = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(TITLE)}</title>
 <meta name="description" content="${esc(DESCRIPTION)}">
+<link rel="canonical" href="${SITE_URL}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Copy as Markdown">
+<meta property="og:title" content="${esc(TITLE)}">
+<meta property="og:description" content="${esc(DESCRIPTION)}">
+<meta property="og:url" content="${SITE_URL}">
+<meta property="og:image" content="${SHARE_IMAGE}">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:image:alt" content="Clipboard icon">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">${JSON.stringify(structuredData).replace(/</g, '\\u003c')}</script>
 <link rel="icon" type="image/svg+xml" href="/icons/clipboard.svg">
 <style>
   :root { --bg:#f6f7f9; --card:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --accent:#0969da; --code:#eff2f5; }
