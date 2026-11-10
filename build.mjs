@@ -79,6 +79,9 @@ const html = `<!doctype html>
   .demo table { border-collapse: collapse; } .demo td, .demo th { border:1px solid var(--line); padding:4px 10px; }
   .demo blockquote { margin:0 0 16px; padding-left:14px; border-left:3px solid var(--line); color:var(--muted); }
   .demo pre { background:var(--code); padding:12px; border-radius:8px; overflow:auto; }
+  .about > :first-child { margin-top:0; } .about > :last-child { margin-bottom:0; }
+  .about h3 { font-size:16px; margin:18px 0 4px; }
+  .about ul { padding-left:22px; margin:4px 0 12px; }
   .muted { color: var(--muted); font-size: 14px; }
   .version { font-size: 14px; font-weight: 500; color: var(--muted); vertical-align: middle; margin-left: 4px; }
   .picker { padding:14px 16px; display:grid; grid-template-columns:auto 1fr; gap:10px 14px; align-items:start; }
@@ -148,6 +151,23 @@ const html = `<!doctype html>
     </table>
     <pre><code class="language-js">const x = 1;
 console.log(x);</code></pre>
+  </div>
+
+  <h2>What it does</h2>
+  <div class="card about">
+    <p>Copy as Markdown is a free bookmarklet that converts the text you select on a web page into Markdown and puts it on your clipboard. It saves the round trip of copying HTML, pasting it into a converter and copying the result again. Paste it straight into Obsidian, Notion, a GitHub issue or README, your notes app, or an AI chat.</p>
+    <h3>What gets converted</h3>
+    <ul>
+      <li>Headings, bold, italic and strikethrough</li>
+      <li>Links and images, with relative URLs turned into full ones</li>
+      <li>Bulleted, numbered, nested and checkbox lists</li>
+      <li>Tables, as GitHub-flavored Markdown tables</li>
+      <li>Inline code and code blocks, keeping the language</li>
+      <li>Block quotes and line breaks</li>
+    </ul>
+    <p>Partial selections keep their context: select two list items and you get a list, select a few table rows and you get a table.</p>
+    <h3>How it works</h3>
+    <p>The conversion runs entirely in your browser, using a compact port of the <a href="https://github.com/mixmark-io/turndown">Turndown</a> HTML-to-Markdown converter. Nothing is sent anywhere, there's no extension to install, and it works on sites with strict security policies because it doesn't load any outside scripts. It works in Chrome, Edge, Firefox, Brave and other desktop browsers that support bookmarklets. It can't read apps that draw text on a canvas, such as Google Docs.</p>
   </div>
 
   <footer class="muted" style="margin-top:40px">
