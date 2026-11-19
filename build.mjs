@@ -5,6 +5,7 @@
 // Usage: node build.mjs
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fill } from './scripts/fill.mjs';
+import { minifyBookmarklet, minifyScript } from './scripts/minify.mjs';
 import * as site from './site/content.mjs';
 
 const dir = new URL('.', import.meta.url);
@@ -17,13 +18,7 @@ const upstream = JSON.parse(read('upstream.json'));
 const turndownVersion = upstream.turndown.version;
 
 // ---------- bookmarklet ----------
-const code = read('bookmarklet.js')
-  .replace(/__VERSION__/g, version)
-  .split('\n')
-  .filter((l) => !l.includes('@test-only'))
-  .map((l) => l.trim())
-  .filter((l) => l && !l.startsWith('//'))
-  .join('\n');
+const code = await minifyBookmarklet(read('bookmarklet.js'), { version });
 
 // Only escape what would break the URL: % (escapes), # (fragment) and line breaks.
 // Full encodeURIComponent roughly doubles the length for no benefit.
@@ -56,7 +51,9 @@ const html = fill(read('site/index.html'), {
   label,
   convertsList: site.CONVERTS.map((c) => `      <li>${c}</li>`).join('\n'),
   config: scriptJson({ emojis: site.EMOJIS, names: site.NAMES }),
-  script: indent(read('site/page.js'), '  ')
+  script: await minifyScript(read('site/page.js')),
+  // How an installed bookmark's URL starts, shown so people can find its version.
+  urlStart: esc(url.slice(0, url.indexOf('Copy as Markdown v') + 'Copy as Markdown v'.length))
 });
 writeFileSync(new URL('index.html', dir), html);
 
@@ -73,4 +70,4 @@ const llms = fill(read('site/llms.md'), {
   raw: site.RAW
 });
 writeFileSync(new URL('llms.txt', dir), llms);
-console.log(`v${version}: bookmarklet ${url.length} chars -> bookmarklet.url.txt, index.html, llms.txt`);
+console.log(`v${version}: bookmarklet ${url.length} chars, index.html ${Buffer.byteLength(html)} bytes -> bookmarklet.url.txt, index.html, llms.txt`);
