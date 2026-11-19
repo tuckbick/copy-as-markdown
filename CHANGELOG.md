@@ -7,7 +7,7 @@ updates the converter to a newer Turndown, and a **patch** bump fixes bugs.
 To update an installed bookmark, open the [install page](https://copy-as-markdown.tuckbick.com/)
 and drag the button to your bookmarks bar again (then delete the old one).
 
-## Unreleased
+## 1.2.0 (2026-11-19)
 
 - The bookmarklet is about 40% shorter (about 15,000 characters, down from 24,500) and the
   install page about 27% smaller, because the build now minifies them. Markdown output is unchanged.

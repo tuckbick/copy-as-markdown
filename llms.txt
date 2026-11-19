@@ -2,7 +2,7 @@
 
 > Free bookmarklet: select text on any web page, click it, and get clean Markdown on your clipboard. Keeps headings, links, lists, tables and code. No extension needed.
 
-Version 1.1.0; the converter is a port of Turndown v7.2.5. It runs entirely in the browser, sends nothing anywhere and loads no outside scripts. It works in Chrome, Edge, Firefox, Brave and other desktop browsers that support bookmarklets. It can't read apps that draw text on a canvas, such as Google Docs.
+Version 1.2.0; the converter is a port of Turndown v7.2.5. It runs entirely in the browser, sends nothing anywhere and loads no outside scripts. It works in Chrome, Edge, Firefox, Brave and other desktop browsers that support bookmarklets. It can't read apps that draw text on a canvas, such as Google Docs.
 
 ## Install
 
