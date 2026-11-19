@@ -7,6 +7,12 @@ notice and the fallback copy box).
 Known issues are tracked with the
 [`accessibility` label](https://github.com/tuckbick/copy-as-markdown/issues?q=label%3Aaccessibility).
 
+## Re-check of 2026-11-19
+
+After splitting the install page's sources into `site/` and minifying the build, `scripts/a11y-check.js`
+was re-run in headless Chrome and the VS Code integrated browser at 1280px and 320px, in light and
+dark mode, and the page was tabbed through: no changes from the audit below.
+
 ## Audit of 2026-11-10
 
 Run on the install page served locally (`python3 -m http.server 8767`) in a Chromium-based
