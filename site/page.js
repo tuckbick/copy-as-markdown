@@ -68,7 +68,7 @@
 })();
 
 // The code box is filled from the drag button's link when opened, so the
-// ~22 KB bookmarklet isn't in the page twice (it would drown out the page's
+// ~15 KB bookmarklet isn't in the page twice (it would drown out the page's
 // text for search engines).
 function fillCode () {
   var ta = document.getElementById('code');

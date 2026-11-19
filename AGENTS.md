@@ -1,22 +1,29 @@
 # Copy as Markdown: notes for coding agents
 
 A bookmarklet that copies the current selection as Markdown. `bookmarklet.js` is the source;
-`build.mjs` turns it into the `javascript:` URL and writes `index.html` (the install page,
+`build.mjs` minifies it into the `javascript:` URL and writes `index.html` (the install page,
 served by GitHub Pages at https://copy-as-markdown.tuckbick.com/) plus `llms.txt` (the same
 information as Markdown for AI agents).
+
+The install page's sources are in `site/`: `content.mjs` (text and settings, including the
+emoji and name choices), `index.html` and `llms.md` (templates with `{{placeholders}}`, filled
+by `scripts/fill.mjs`, which fails on a missing or unused value), and `style.css` and `page.js`
+(inlined into the page; `page.js` is minified). `scripts/minify.mjs` holds the Terser settings.
 
 ## Commands
 
 - `npm install`: dev dependencies (jsdom, and the real Turndown for parity tests)
-- `npm test`: parity tests against Turndown plus behavior tests (`test/convert.test.mjs`)
+- `npm test`: parity tests against Turndown plus behavior tests (`test/convert.test.mjs`),
+  UI tests (`test/ui.test.mjs`) and tests of the minified build (`test/build.test.mjs`)
 - `npm run build`: rebuild `index.html` and `llms.txt` (commit both; CI fails if they're stale)
 - `npm run check-upstream`: compare `upstream.json` with the latest Turndown / GFM plugin
 
 ## Source rules for bookmarklet.js
 
-- Only full-line `//` comments, and end statements with semicolons: the build joins trimmed
-  lines without a minifier. `/* */` comments are kept in the built bookmarklet (used for the
-  license notice).
+- Write for readability: the build minifies with Terser. The only comment kept in the built
+  bookmarklet is the `/* Copy as Markdown v… */` license and version notice.
+- The file must stay a plain `(function () { ... })();`: a `javascript:` URL that evaluates to
+  a value replaces the page, so the build fails on any other shape.
 - The converter mirrors Turndown's files and names (sections are headed with the upstream
   file name). Keep it that way, and mark every intentional difference with `DIFF:`.
 - The build fails above 32,000 characters (browser bookmark limits).
@@ -24,7 +31,7 @@ information as Markdown for AI agents).
 ## Accessibility
 
 Target is WCAG 2.2 AA; see `docs/accessibility.md`. After changing colors, layout or controls
-on the install page (in `build.mjs`), re-run `scripts/a11y-check.js` in the browser in light and
+on the install page (in `site/`), re-run `scripts/a11y-check.js` in the browser in light and
 dark mode, Tab through the page, and update the doc's results. Changes to the bookmarklet's
 notice or fallback dialog must keep their roles, names and focus handling. Track problems as
 GitHub issues with the `accessibility` label.

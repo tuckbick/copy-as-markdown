@@ -10,7 +10,7 @@ Open the install page, **https://copy-as-markdown.tuckbick.com/**, and drag the 
 
 If dragging doesn't work (some Safari versions), create any bookmark and replace its URL with the code shown on the install page.
 
-Browsers don't keep a favicon for `javascript:` bookmarks, so the emoji at the start of the bookmark's name serves as its icon. The install page lets you pick the emoji and name (default "📋 Copy as Markdown", or a shorter one like "📋 MD", or your own) before dragging; the choices are the `EMOJIS` and `NAMES` lists in `build.mjs`.
+Browsers don't keep a favicon for `javascript:` bookmarks, so the emoji at the start of the bookmark's name serves as its icon. The install page lets you pick the emoji and name (default "📋 Copy as Markdown", or a shorter one like "📋 MD", or your own) before dragging; the choices are the `EMOJIS` and `NAMES` lists in `site/content.mjs`.
 
 ## What it converts
 
@@ -45,7 +45,7 @@ MIT, see [LICENSE](LICENSE). The converter is adapted from Turndown and turndown
 
 The site is published by GitHub Pages straight from the root of `main` (Settings → Pages → *Deploy from a branch*), so pushing a rebuilt `index.html` and `llms.txt` updates it. `.nojekyll` tells Pages to serve the files as-is, and `CNAME` sets the custom domain (copy-as-markdown.tuckbick.com, a DNS CNAME to `tuckbick.github.io`).
 
-`bookmarklet.js` is the readable source. After editing it, install the dev dependencies once, then run the tests and rebuild the bookmarklet and the install page:
+`bookmarklet.js` is the readable source of the bookmarklet, and `site/` holds the install page's sources (text and settings in `content.mjs`, templates, CSS and script). After editing them, install the dev dependencies once, then run the tests and rebuild the bookmarklet and the install page:
 
 ```bash
 npm install
@@ -59,7 +59,13 @@ npm test
 npm run build
 ```
 
-The tests compare the port's output with the real Turndown (pinned in `package.json`) for HTML that doesn't touch an intentional difference, and check the differences and selection handling separately. CI runs them on every push and fails if the committed `index.html` or `llms.txt` is out of date.
+The tests compare the port's output with the real Turndown (pinned in `package.json`) for HTML that doesn't touch an intentional difference, check the differences and selection handling separately, and run the minified bookmarklet to make sure it converts the same as the source. CI runs them on every push and fails if the committed `index.html` or `llms.txt` is out of date.
+
+`npm run build` minifies the bookmarklet and the page's script with Terser, then writes `index.html` (the install page), `llms.txt` (a Markdown summary of the page for AI agents, served at `/llms.txt`) and `bookmarklet.url.txt` (the raw `javascript:` URL, git-ignored). The install page's favicon is `icons/clipboard.svg`.
+
+The build fails if the bookmarklet grows past 32,000 characters. Browsers don't publish a bookmark length limit, and long bookmarklets have been reported as cut off in Firefox and failing silently in Safari, so it stays well under that.
+
+Keep the sources readable: only the build output is minified. The bookmarklet's `/* Copy as Markdown v… */` notice is the one comment kept in it.
 
 ### Versions and releases
 
@@ -68,9 +74,3 @@ The version is in `package.json` and shown on the install page; installed bookma
 ### Keeping up with Turndown
 
 `upstream.json` records the exact Turndown and turndown-plugin-gfm versions the port is based on. A monthly GitHub Action (`.github/workflows/upstream.yml`) runs `npm run check-upstream` and opens an issue labeled `upstream` when a ported file has changed. To act on it, ask Claude Code (or another coding agent) in this repo to "update from Turndown"; the steps it follows are in [AGENTS.md](AGENTS.md), which `CLAUDE.md` points to.
-
-This writes `index.html` (the install page), `llms.txt` (a Markdown summary of the page for AI agents, served at `/llms.txt`) and `bookmarklet.url.txt` (the raw `javascript:` URL, git-ignored). The install page's favicon is `icons/clipboard.svg`.
-
-The build fails if the bookmarklet grows past 32,000 characters. Browsers don't publish a bookmark length limit, and long bookmarklets have been reported as cut off in Firefox and failing silently in Safari, so it stays well under that.
-
-Source conventions: use full-line `//` comments only and end statements with semicolons, since the build joins trimmed lines without a real minifier.

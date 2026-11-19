@@ -10,8 +10,8 @@
 // Every intentional difference from Turndown is marked "DIFF:".
 // See THIRD_PARTY_NOTICES.md for the licenses.
 //
-// Rules for this file: only full-line // comments, and end statements with semicolons
-// (the build joins trimmed lines without a real minifier).
+// The build minifies this file with Terser; the notice comment below is the only comment kept.
+// Keep the outer (function () { ... })(): a bookmarklet that evaluates to a value replaces the page.
 (function () {
   /* Copy as Markdown v__VERSION__ (MIT, (c) 2026 Tucker Bickler). Converter adapted from Turndown (MIT, (c) 2017 Dom Christie), turndown-plugin-gfm (MIT, (c) 2017 Dom Christie) and collapse-whitespace (MIT, (c) 2014 Luc Thevenard). */
   'use strict';
