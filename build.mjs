@@ -58,7 +58,7 @@ const structuredData = {
   license: 'https://opensource.org/licenses/MIT',
   isAccessibleForFree: true,
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-  author: { '@type': 'Person', name: 'Tucker Bickler' },
+  author: { '@type': 'Person', name: 'Tucker Bickler', url: 'https://tuckbick.com' },
   sameAs: ['https://github.com/tuckbick/copy-as-markdown']
 };
 
@@ -212,6 +212,7 @@ console.log(x);</code></pre>
 </main>
 
 <footer class="site-footer muted">
+    <p>Source: <a href="https://github.com/tuckbick/copy-as-markdown">github.com/tuckbick/copy-as-markdown</a> · Made by <a href="https://tuckbick.com">tuckbick.com</a></p>
     <p>Version ${version}, converter based on Turndown ${turndownVersion}. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/CHANGELOG.md">Changelog</a> · <a href="https://github.com/tuckbick/copy-as-markdown/releases">Releases</a>. To check which version you have installed, edit the bookmark: its URL starts with <code>javascript:(function () {/* Copy as Markdown v…</code>.</p>
     <p>MIT licensed. The converter is adapted from <a href="https://github.com/mixmark-io/turndown">Turndown</a> and <a href="https://github.com/mixmark-io/turndown-plugin-gfm">turndown-plugin-gfm</a> (MIT). Icon: <a href="https://github.com/jdecked/twemoji">Twemoji</a> 📋, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/THIRD_PARTY_NOTICES.md">Full notices</a>.</p>
 </footer>
