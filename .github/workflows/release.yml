@@ -28,7 +28,7 @@ jobs:
             echo "Tag $GITHUB_REF_NAME does not match package.json version $version"; exit 1
           fi
           npm run build
-          git diff --exit-code -- index.html || (echo "index.html is out of date for this tag"; exit 1)
+          git diff --exit-code -- index.html llms.txt || (echo "index.html or llms.txt is out of date for this tag"; exit 1)
           # Release notes: the CHANGELOG section for this version.
           awk -v v="$version" '
             $0 ~ "^## " v "( |$)" { on=1; next }

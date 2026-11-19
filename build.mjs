@@ -1,4 +1,5 @@
-// Builds the bookmarklet URL from bookmarklet.js and writes index.html (the install page, served by GitHub Pages).
+// Builds the bookmarklet URL from bookmarklet.js and writes index.html (the install page, served by GitHub Pages)
+// and llms.txt (a Markdown summary of the page for AI agents).
 // Usage: node build.mjs
 import { readFileSync, writeFileSync } from 'node:fs';
 
@@ -62,6 +63,16 @@ const structuredData = {
   sameAs: ['https://github.com/tuckbick/copy-as-markdown']
 };
 
+// What the converter handles: listed on the install page and in llms.txt.
+const CONVERTS = [
+  'Headings, bold, italic and strikethrough',
+  'Links and images, with relative URLs turned into full ones',
+  'Bulleted, numbered, nested and checkbox lists',
+  'Tables, as GitHub-flavored Markdown tables',
+  'Inline code and code blocks, keeping the language',
+  'Block quotes and line breaks'
+];
+
 // ---------- icon ----------
 // Browsers don't keep a favicon for javascript: bookmarks, so the bookmarklet's
 // "icon" is the emoji at the start of its name. icons/clipboard.svg (the Twemoji 📋,
@@ -85,6 +96,7 @@ const html = `<!doctype html>
 <title>${esc(TITLE)}</title>
 <meta name="description" content="${esc(DESCRIPTION)}">
 <link rel="canonical" href="${SITE_URL}">
+<link rel="describedby" href="/llms.txt">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Copy as Markdown">
 <meta property="og:title" content="${esc(TITLE)}">
@@ -198,12 +210,7 @@ console.log(x);</code></pre>
     <p>Copy as Markdown is a free bookmarklet that converts the text you select on a web page into Markdown and puts it on your clipboard. It saves the round trip of copying HTML, pasting it into a converter and copying the result again. Paste it straight into Obsidian, Notion, a GitHub issue or README, your notes app, or an AI chat.</p>
     <h3>What gets converted</h3>
     <ul>
-      <li>Headings, bold, italic and strikethrough</li>
-      <li>Links and images, with relative URLs turned into full ones</li>
-      <li>Bulleted, numbered, nested and checkbox lists</li>
-      <li>Tables, as GitHub-flavored Markdown tables</li>
-      <li>Inline code and code blocks, keeping the language</li>
-      <li>Block quotes and line breaks</li>
+${CONVERTS.map((c) => `      <li>${c}</li>`).join('\n')}
     </ul>
     <p>Partial selections keep their context: select two list items and you get a list, select a few table rows and you get a table.</p>
     <h3>How it works</h3>
@@ -304,4 +311,44 @@ console.log(x);</code></pre>
 </html>
 `;
 writeFileSync(new URL('index.html', dir), html);
-console.log(`v${version}: bookmarklet ${url.length} chars -> bookmarklet.url.txt, index.html`);
+
+// ---------- llms.txt ----------
+// A plain Markdown summary for AI agents (llmstxt.org), served at the site root.
+const REPO = 'https://github.com/tuckbick/copy-as-markdown';
+// Raw files, so agents get Markdown rather than GitHub's HTML view.
+const RAW = 'https://raw.githubusercontent.com/tuckbick/copy-as-markdown/main';
+const llms = `# Copy as Markdown
+
+> ${DESCRIPTION}
+
+Version ${version}; the converter is a port of Turndown ${turndownVersion}. It runs entirely in the browser, sends nothing anywhere and loads no outside scripts. It works in Chrome, Edge, Firefox, Brave and other desktop browsers that support bookmarklets. It can't read apps that draw text on a canvas, such as Google Docs.
+
+## Install
+
+- Open ${SITE_URL} and drag the "📋 Copy as Markdown" button to the bookmarks bar.
+- Or create a bookmark whose URL is the bookmarklet code: the \`copy-as-markdown-vX.Y.Z.txt\` file attached to the latest GitHub release.
+
+## Use
+
+Select text on any page and click the bookmark. The selection is copied to the clipboard as Markdown.
+
+## What gets converted
+
+${CONVERTS.map((c) => `- ${c}`).join('\n')}
+
+Partial selections keep their context: select two list items and you get a list, select a few table rows and you get a table.
+
+## Links
+
+- [Install page](${SITE_URL})
+- [Source code](${REPO}): MIT license
+- [Latest release and bookmarklet code](${REPO}/releases/latest)
+- [README](${RAW}/README.md): install options, how the converter works, and how to build it
+
+## Optional
+
+- [Changelog](${RAW}/CHANGELOG.md): user-facing changes in each release
+- [Author](https://tuckbick.com)
+`;
+writeFileSync(new URL('llms.txt', dir), llms);
+console.log(`v${version}: bookmarklet ${url.length} chars -> bookmarklet.url.txt, index.html, llms.txt`);

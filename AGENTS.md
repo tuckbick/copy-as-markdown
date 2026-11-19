@@ -2,13 +2,14 @@
 
 A bookmarklet that copies the current selection as Markdown. `bookmarklet.js` is the source;
 `build.mjs` turns it into the `javascript:` URL and writes `index.html` (the install page,
-served by GitHub Pages at https://copy-as-markdown.tuckbick.com/).
+served by GitHub Pages at https://copy-as-markdown.tuckbick.com/) plus `llms.txt` (the same
+information as Markdown for AI agents).
 
 ## Commands
 
 - `npm install`: dev dependencies (jsdom, and the real Turndown for parity tests)
 - `npm test`: parity tests against Turndown plus behavior tests (`test/convert.test.mjs`)
-- `npm run build`: rebuild `index.html` (commit it; CI fails if it's stale)
+- `npm run build`: rebuild `index.html` and `llms.txt` (commit both; CI fails if they're stale)
 - `npm run check-upstream`: compare `upstream.json` with the latest Turndown / GFM plugin
 
 ## Source rules for bookmarklet.js

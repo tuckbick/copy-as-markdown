@@ -1,0 +1,37 @@
+# Copy as Markdown
+
+> Free bookmarklet: select text on any web page, click it, and get clean Markdown on your clipboard. Keeps headings, links, lists, tables and code. No extension needed.
+
+Version 1.1.0; the converter is a port of Turndown v7.2.5. It runs entirely in the browser, sends nothing anywhere and loads no outside scripts. It works in Chrome, Edge, Firefox, Brave and other desktop browsers that support bookmarklets. It can't read apps that draw text on a canvas, such as Google Docs.
+
+## Install
+
+- Open https://copy-as-markdown.tuckbick.com/ and drag the "📋 Copy as Markdown" button to the bookmarks bar.
+- Or create a bookmark whose URL is the bookmarklet code: the `copy-as-markdown-vX.Y.Z.txt` file attached to the latest GitHub release.
+
+## Use
+
+Select text on any page and click the bookmark. The selection is copied to the clipboard as Markdown.
+
+## What gets converted
+
+- Headings, bold, italic and strikethrough
+- Links and images, with relative URLs turned into full ones
+- Bulleted, numbered, nested and checkbox lists
+- Tables, as GitHub-flavored Markdown tables
+- Inline code and code blocks, keeping the language
+- Block quotes and line breaks
+
+Partial selections keep their context: select two list items and you get a list, select a few table rows and you get a table.
+
+## Links
+
+- [Install page](https://copy-as-markdown.tuckbick.com/)
+- [Source code](https://github.com/tuckbick/copy-as-markdown): MIT license
+- [Latest release and bookmarklet code](https://github.com/tuckbick/copy-as-markdown/releases/latest)
+- [README](https://raw.githubusercontent.com/tuckbick/copy-as-markdown/main/README.md): install options, how the converter works, and how to build it
+
+## Optional
+
+- [Changelog](https://raw.githubusercontent.com/tuckbick/copy-as-markdown/main/CHANGELOG.md): user-facing changes in each release
+- [Author](https://tuckbick.com)
