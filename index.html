@@ -138,10 +138,15 @@ console.log(x);</code></pre>
     <p>Version 1.1.0, converter based on Turndown v7.2.5. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/CHANGELOG.md">Changelog</a> · <a href="https://github.com/tuckbick/copy-as-markdown/releases">Releases</a>. To check which version you have installed, edit the bookmark: its URL starts with <code>javascript:(function () {/* Copy as Markdown v…</code>.</p>
     <p>MIT licensed. The converter is adapted from <a href="https://github.com/mixmark-io/turndown">Turndown</a> and <a href="https://github.com/mixmark-io/turndown-plugin-gfm">turndown-plugin-gfm</a> (MIT). Icon: <a href="https://github.com/jdecked/twemoji">Twemoji</a> 📋, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/THIRD_PARTY_NOTICES.md">Full notices</a>.</p>
 </footer>
+<script type="application/json" id="config">{"emojis":["📋","📝","✂️","⬇️","🔽",""],"names":["Copy as Markdown","MD","Markdown","Copy as MD","Copy MD","Selection → MD","Markdownify",""]}</script>
 <script>
+  // The install page's script: the icon/name picker and the "Add it by hand" code box.
+  // build.mjs inlines it into index.html. The choices come from the JSON config block
+  // on the page (EMOJIS and NAMES in site/content.mjs).
   (function () {
-    var EMOJIS = ["📋","📝","✂️","⬇️","🔽",""];
-    var NAMES = ["Copy as Markdown","MD","Markdown","Copy as MD","Copy MD","Selection → MD","Markdownify",""];
+    var config = JSON.parse(document.getElementById('config').textContent);
+    var EMOJIS = config.emojis;
+    var NAMES = config.names;
     var KEY = 'copy-as-markdown:name';
     var state = { emoji: EMOJIS[0], name: NAMES[0] };
     // A label needs an emoji or a name (or both): "None" is disabled in one row

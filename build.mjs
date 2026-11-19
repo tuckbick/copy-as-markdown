@@ -1,18 +1,23 @@
-// Builds the bookmarklet URL from bookmarklet.js and writes index.html (the install page, served by GitHub Pages)
-// and llms.txt (a Markdown summary of the page for AI agents).
+// Builds the bookmarklet URL from bookmarklet.js and writes index.html (the install page,
+// served by GitHub Pages) and llms.txt (a Markdown summary of the page for AI agents).
+// The page's sources are in site/: content.mjs (text and settings), index.html and
+// llms.md (templates), style.css and page.js (inlined into the page).
 // Usage: node build.mjs
 import { readFileSync, writeFileSync } from 'node:fs';
+import { fill } from './scripts/fill.mjs';
+import * as site from './site/content.mjs';
 
 const dir = new URL('.', import.meta.url);
-const src = readFileSync(new URL('bookmarklet.js', dir), 'utf8');
+const read = (path) => readFileSync(new URL(path, dir), 'utf8');
 
 // The version lives in package.json; it's stamped into the bookmarklet's notice
 // comment (so an installed bookmark shows its version in its URL) and the install page.
-const { version } = JSON.parse(readFileSync(new URL('package.json', dir), 'utf8'));
-const upstream = JSON.parse(readFileSync(new URL('upstream.json', dir), 'utf8'));
+const { version } = JSON.parse(read('package.json'));
+const upstream = JSON.parse(read('upstream.json'));
 const turndownVersion = upstream.turndown.version;
 
-const code = src
+// ---------- bookmarklet ----------
+const code = read('bookmarklet.js')
   .replace(/__VERSION__/g, version)
   .split('\n')
   .filter((l) => !l.includes('@test-only'))
@@ -30,325 +35,42 @@ if (url.length > MAX) {
 }
 writeFileSync(new URL('bookmarklet.url.txt', dir), url + '\n');
 
+// ---------- index.html ----------
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+// JSON inside a <script> element: escape < so the data can't close the element.
+const scriptJson = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
+const indent = (text, pad) => text.trimEnd().split('\n').map((l) => (l ? pad + l : l)).join('\n');
+const label = `${site.EMOJI} ${site.NAME}`;
 
-// ---------- search ----------
-// Shown as the headline and snippet in search results.
-const TITLE = 'Copy as Markdown: Bookmarklet to Copy Selected Text as Markdown';
-const DESCRIPTION = 'Free bookmarklet: select text on any web page, click it, and get clean Markdown on your clipboard. Keeps headings, links, lists, tables and code. No extension needed.';
-// The one address search engines should index (the github.io URL redirects here).
-const SITE_URL = 'https://copy-as-markdown.tuckbick.com/';
-// Link-preview image: icons/clipboard.svg rendered as PNG, since most sites don't
-// show SVG previews. Regenerate after changing the SVG (macOS):
-//   sips -s format png -z 512 512 icons/clipboard.svg --out icons/clipboard-512.png
-const SHARE_IMAGE = SITE_URL + 'icons/clipboard-512.png';
-
-// Structured data: describes the page as a free web tool. No ratings or reviews,
-// since there aren't any to report.
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'WebApplication',
-  name: 'Copy as Markdown',
-  description: DESCRIPTION,
-  url: SITE_URL,
-  image: SHARE_IMAGE,
-  applicationCategory: 'UtilitiesApplication',
-  operatingSystem: 'Any',
-  browserRequirements: 'A desktop web browser that supports bookmarklets',
-  softwareVersion: version,
-  license: 'https://opensource.org/licenses/MIT',
-  isAccessibleForFree: true,
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-  author: { '@type': 'Person', name: 'Tucker Bickler', url: 'https://tuckbick.com' },
-  sameAs: ['https://github.com/tuckbick/copy-as-markdown']
-};
-
-// What the converter handles: listed on the install page and in llms.txt.
-const CONVERTS = [
-  'Headings, bold, italic and strikethrough',
-  'Links and images, with relative URLs turned into full ones',
-  'Bulleted, numbered, nested and checkbox lists',
-  'Tables, as GitHub-flavored Markdown tables',
-  'Inline code and code blocks, keeping the language',
-  'Block quotes and line breaks'
-];
-
-// ---------- icon ----------
-// Browsers don't keep a favicon for javascript: bookmarks, so the bookmarklet's
-// "icon" is the emoji at the start of its name. icons/clipboard.svg (the Twemoji 📋,
-// CC-BY 4.0, see THIRD_PARTY_NOTICES.md) is the install page's own favicon. It's
-// linked as a file rather than inlined: search engines only show favicons they can
-// fetch from their own URL.
-const NAME = 'Copy as Markdown';
-const EMOJI = '📋';
-
-// Name choices on the install page. The dragged bookmark takes the button's
-// label as its name, so people can pick whatever they'll recognize. The first
-// entry in each list is the default.
-const EMOJIS = ['📋', '📝', '✂️', '⬇️', '🔽', ''];
-const NAMES = [NAME, 'MD', 'Markdown', 'Copy as MD', 'Copy MD', 'Selection → MD', 'Markdownify', ''];
-
-const html = `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(TITLE)}</title>
-<meta name="description" content="${esc(DESCRIPTION)}">
-<link rel="canonical" href="${SITE_URL}">
-<link rel="describedby" href="/llms.txt">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Copy as Markdown">
-<meta property="og:title" content="${esc(TITLE)}">
-<meta property="og:description" content="${esc(DESCRIPTION)}">
-<meta property="og:url" content="${SITE_URL}">
-<meta property="og:image" content="${SHARE_IMAGE}">
-<meta property="og:image:width" content="512">
-<meta property="og:image:height" content="512">
-<meta property="og:image:alt" content="Clipboard icon">
-<meta name="twitter:card" content="summary">
-<script type="application/ld+json">${JSON.stringify(structuredData).replace(/</g, '\\u003c')}</script>
-<link rel="icon" type="image/svg+xml" href="/icons/clipboard.svg">
-<style>
-  :root { --bg:#f6f7f9; --card:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --accent:#0969da; --code:#eff2f5; --link:#0969da; --button:#0969da; --accent-text:#0550ae; --control:#818b98; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#0d1117; --card:#161b22; --fg:#e6edf3; --muted:#9198a1; --line:#30363d; --accent:#4493f8; --code:#1f242c; --link:#4493f8; --button:#1a5fd0; --accent-text:#4493f8; --control:#6e7681; } }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
-  a { color:var(--link); }
-  main { max-width: 760px; margin: 0 auto; padding: 40px 16px 0; }
-  .site-footer { max-width: 760px; margin: 40px auto 0; padding: 0 16px 80px; }
-  h1 { font-size: 28px; margin: 0 0 4px; }
-  h2 { font-size: 18px; margin: 36px 0 8px; }
-  p.lead { color: var(--muted); margin: 0 0 28px; }
-  .drag { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:10px; background:var(--button); color:#fff; font-weight:600; text-decoration:none; cursor:grab; box-shadow:0 2px 8px rgba(0,0,0,.15); }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; }
-  ol { padding-left: 22px; } li { margin: 4px 0; }
-  code { background:var(--code); padding:1px 5px; border-radius:4px; font-size:.9em; }
-  textarea { width:100%; height:110px; font:12px/1.4 ui-monospace,Menlo,monospace; background:var(--code); color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:10px; resize:vertical; }
-  details summary { cursor:pointer; margin-top:8px; }
-  details[open] summary { margin-bottom:4px; }
-  button { font:inherit; font-size:14px; padding:6px 14px; border-radius:8px; border:1px solid var(--control); background:var(--card); color:var(--fg); cursor:pointer; margin-top:8px; }
-  .demo table { border-collapse: collapse; } .demo td, .demo th { border:1px solid var(--line); padding:4px 10px; }
-  .demo blockquote { margin:0 0 16px; padding-left:14px; border-left:3px solid var(--line); color:var(--muted); }
-  .demo pre { background:var(--code); padding:12px; border-radius:8px; overflow:auto; }
-  .about > :first-child { margin-top:0; } .about > :last-child { margin-bottom:0; }
-  .about h3 { font-size:16px; margin:18px 0 4px; }
-  .about ul { padding-left:22px; margin:4px 0 12px; }
-  .muted { color: var(--muted); font-size: 14px; }
-  .version { font-size: 14px; font-weight: 500; color: var(--muted); vertical-align: middle; margin-left: 4px; }
-  .picker { padding:14px 16px; display:grid; grid-template-columns:auto 1fr; gap:10px 14px; align-items:start; }
-  .h2-note { font-size:13px; font-weight:500; color:var(--muted); margin-left:6px; }
-  .picker-note { grid-column:1 / -1; margin:2px 0 0; font-size:13px; }
-  .chip:disabled { opacity:.4; cursor:not-allowed; }
-  .picker-label { font-size:13px; color:var(--muted); margin:0; padding-top:4px; }
-  .chips { display:flex; flex-wrap:wrap; gap:6px; }
-  .chip { font:inherit; font-size:14px; margin:0; padding:3px 10px; border-radius:999px; border:1px solid var(--control); background:transparent; color:var(--fg); cursor:pointer; min-width:36px; }
-  .chip[aria-pressed="true"] { border-color:var(--accent); color:var(--accent-text); background:color-mix(in srgb, var(--accent) 12%, transparent); font-weight:600; }
-  .chip:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-  .custom { font:inherit; font-size:14px; padding:3px 10px; border-radius:999px; border:1px solid var(--control); background:transparent; color:var(--fg); width:160px; max-width:100%; }
-  .custom:focus { outline:2px solid var(--accent); outline-offset:1px; }
-  .drag-zone { margin:12px 0 6px; }
-  .drag-zone .drag { font-size:18px; padding:16px 28px; border-radius:12px; min-height:58px; }
-  @media (max-width: 480px) { .picker { grid-template-columns:1fr; } .picker-label { padding-top:0; } }
-</style>
-</head>
-<body>
-<main>
-  <h1>Copy as Markdown <span class="version">v${version}</span></h1>
-  <p class="lead">Select text on any page, click the bookmark, and the selection lands on your clipboard as Markdown.</p>
-
-  <h2 id="configure">Configure <span class="h2-note">optional</span></h2>
-  <section class="card picker" aria-labelledby="configure">
-    <p class="picker-label" id="emoji-label">Icon</p>
-    <div class="chips" id="emojis" role="group" aria-labelledby="emoji-label"></div>
-    <p class="picker-label" id="name-label">Name</p>
-    <div class="chips" id="names" role="group" aria-labelledby="name-label"></div>
-    <p class="picker-note muted">This becomes the bookmark's name. Browsers don't show icons for bookmarklets, so the emoji is how you'll spot it; shorter names won't get cut off in the bar.</p>
-  </section>
-
-  <h2>Install</h2>
-  <div class="card">
-    <ol>
-      <li>Show your bookmarks bar (<code>⌘⇧B</code> on Mac, <code>Ctrl+Shift+B</code> on Windows).</li>
-      <li>Drag this button onto the bookmarks bar:
-        <div class="drag-zone">
-          <a class="drag" id="drag" href="${esc(url)}" onclick="alert('Drag this button to your bookmarks bar instead of clicking it.'); return false;">${EMOJI} ${NAME}</a>
-        </div>
-      </li>
-    </ol>
-    <details id="code-details">
-      <summary class="muted">Drag not working (e.g. Safari)? Add it by hand</summary>
-      <p class="muted">Bookmark any page, edit that bookmark, name it <b class="current-name">${EMOJI} ${NAME}</b>, and replace its URL with this:</p>
-      <textarea id="code" readonly aria-label="Bookmarklet code"></textarea>
-      <button id="copybtn">Copy bookmarklet code</button>
-    </details>
-  </div>
-
-  <h2>Try it here</h2>
-  <p class="muted">Once installed, select some of the sample below and click the bookmark.</p>
-  <div class="card demo">
-    <h3>Sample section</h3>
-    <p>Some <strong>bold</strong>, <em>italic</em>, <code>inline code</code>, and a <a href="https://github.com/euangoddard/clipboard2markdown">link</a>.</p>
-    <ul>
-      <li>First item</li>
-      <li>Second item
-        <ul><li>Nested item</li></ul>
-      </li>
-    </ul>
-    <blockquote>A quoted line.</blockquote>
-    <table>
-      <tr><th>Name</th><th>Value</th></tr>
-      <tr><td>alpha</td><td>1</td></tr>
-      <tr><td>beta</td><td>2</td></tr>
-    </table>
-    <pre><code class="language-js">const x = 1;
-console.log(x);</code></pre>
-  </div>
-
-  <h2>What it does</h2>
-  <div class="card about">
-    <p>Copy as Markdown is a free bookmarklet that converts the text you select on a web page into Markdown and puts it on your clipboard. It saves the round trip of copying HTML, pasting it into a converter and copying the result again. Paste it straight into Obsidian, Notion, a GitHub issue or README, your notes app, or an AI chat.</p>
-    <h3>What gets converted</h3>
-    <ul>
-${CONVERTS.map((c) => `      <li>${c}</li>`).join('\n')}
-    </ul>
-    <p>Partial selections keep their context: select two list items and you get a list, select a few table rows and you get a table.</p>
-    <h3>How it works</h3>
-    <p>The conversion runs entirely in your browser, using a compact port of the <a href="https://github.com/mixmark-io/turndown">Turndown</a> HTML-to-Markdown converter. Nothing is sent anywhere, there's no extension to install, and it works on sites with strict security policies because it doesn't load any outside scripts. It works in Chrome, Edge, Firefox, Brave and other desktop browsers that support bookmarklets. It can't read apps that draw text on a canvas, such as Google Docs.</p>
-  </div>
-</main>
-
-<footer class="site-footer muted">
-    <p>Source: <a href="https://github.com/tuckbick/copy-as-markdown">github.com/tuckbick/copy-as-markdown</a> · Made by <a href="https://tuckbick.com">tuckbick.com</a></p>
-    <p>Version ${version}, converter based on Turndown ${turndownVersion}. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/CHANGELOG.md">Changelog</a> · <a href="https://github.com/tuckbick/copy-as-markdown/releases">Releases</a>. To check which version you have installed, edit the bookmark: its URL starts with <code>javascript:(function () {/* Copy as Markdown v…</code>.</p>
-    <p>MIT licensed. The converter is adapted from <a href="https://github.com/mixmark-io/turndown">Turndown</a> and <a href="https://github.com/mixmark-io/turndown-plugin-gfm">turndown-plugin-gfm</a> (MIT). Icon: <a href="https://github.com/jdecked/twemoji">Twemoji</a> 📋, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>. <a href="https://github.com/tuckbick/copy-as-markdown/blob/main/THIRD_PARTY_NOTICES.md">Full notices</a>.</p>
-</footer>
-<script>
-  (function () {
-    var EMOJIS = ${JSON.stringify(EMOJIS)};
-    var NAMES = ${JSON.stringify(NAMES)};
-    var KEY = 'copy-as-markdown:name';
-    var state = { emoji: EMOJIS[0], name: NAMES[0] };
-    // A label needs an emoji or a name (or both): "None" is disabled in one row
-    // while the other row is on "None".
-    function valid (s) {
-      return s && typeof s.emoji === 'string' && typeof s.name === 'string' && (s.emoji || s.name.trim());
-    }
-    try {
-      var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
-      if (valid(saved)) state = saved;
-    } catch (e) {}
-
-    var drag = document.getElementById('drag');
-    var custom;
-
-    function label() { return [state.emoji, state.name.trim()].filter(Boolean).join(' '); }
-
-    function render() {
-      drag.textContent = label();
-      document.querySelectorAll('.current-name').forEach(function (el) { el.textContent = label(); });
-      document.querySelectorAll('#emojis .chip').forEach(function (b) {
-        b.setAttribute('aria-pressed', String(b.dataset.value === state.emoji));
-        b.disabled = !b.dataset.value && !state.name.trim();
-      });
-      var preset = NAMES.indexOf(state.name) >= 0;
-      document.querySelectorAll('#names .chip').forEach(function (b) {
-        b.setAttribute('aria-pressed', String(b.dataset.value === state.name));
-        b.disabled = !b.dataset.value && !state.emoji;
-      });
-      if (custom && !preset && document.activeElement !== custom) custom.value = state.name;
-      if (custom && preset && document.activeElement !== custom) custom.value = '';
-      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
-    }
-
-    function chip(parent, value, text, key) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'chip';
-      b.dataset.value = value;
-      b.textContent = text;
-      b.addEventListener('click', function () { state[key] = value; render(); });
-      parent.appendChild(b);
-    }
-
-    var emojiBox = document.getElementById('emojis');
-    EMOJIS.forEach(function (e) { chip(emojiBox, e, e || 'None', 'emoji'); });
-    var nameBox = document.getElementById('names');
-    NAMES.forEach(function (n) { chip(nameBox, n, n || 'None', 'name'); });
-
-    custom = document.createElement('input');
-    custom.className = 'custom';
-    custom.placeholder = 'Or type your own';
-    custom.setAttribute('aria-label', 'Custom name');
-    custom.maxLength = 40;
-    custom.addEventListener('input', function () {
-      state.name = custom.value.trim() ? custom.value : NAMES[0];
-      render();
-    });
-    nameBox.appendChild(custom);
-    render();
-  })();
-
-  // The code box is filled from the drag button's link when opened, so the
-  // ~22 KB bookmarklet isn't in the page twice (it would drown out the page's
-  // text for search engines).
-  function fillCode () {
-    var ta = document.getElementById('code');
-    if (!ta.value) ta.value = document.getElementById('drag').getAttribute('href');
-    return ta;
-  }
-  document.getElementById('code-details').addEventListener('toggle', function () { if (this.open) fillCode(); });
-
-  document.getElementById('copybtn').addEventListener('click', function () {
-    var ta = fillCode();
-    ta.select();
-    var done = function () { this.textContent = 'Copied!'; }.bind(this);
-    if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(done, function () { document.execCommand('copy'); done(); });
-    else { document.execCommand('copy'); done(); }
-  });
-</script>
-</body>
-</html>
-`;
+const html = fill(read('site/index.html'), {
+  title: esc(site.TITLE),
+  description: esc(site.DESCRIPTION),
+  siteUrl: site.SITE_URL,
+  shareImage: site.SHARE_IMAGE,
+  repo: site.REPO,
+  structuredData: scriptJson(site.structuredData(version)),
+  style: indent(read('site/style.css'), '  '),
+  version,
+  turndownVersion,
+  bookmarkletUrl: esc(url),
+  label,
+  convertsList: site.CONVERTS.map((c) => `      <li>${c}</li>`).join('\n'),
+  config: scriptJson({ emojis: site.EMOJIS, names: site.NAMES }),
+  script: indent(read('site/page.js'), '  ')
+});
 writeFileSync(new URL('index.html', dir), html);
 
 // ---------- llms.txt ----------
 // A plain Markdown summary for AI agents (llmstxt.org), served at the site root.
-const REPO = 'https://github.com/tuckbick/copy-as-markdown';
-// Raw files, so agents get Markdown rather than GitHub's HTML view.
-const RAW = 'https://raw.githubusercontent.com/tuckbick/copy-as-markdown/main';
-const llms = `# Copy as Markdown
-
-> ${DESCRIPTION}
-
-Version ${version}; the converter is a port of Turndown ${turndownVersion}. It runs entirely in the browser, sends nothing anywhere and loads no outside scripts. It works in Chrome, Edge, Firefox, Brave and other desktop browsers that support bookmarklets. It can't read apps that draw text on a canvas, such as Google Docs.
-
-## Install
-
-- Open ${SITE_URL} and drag the "📋 Copy as Markdown" button to the bookmarks bar.
-- Or create a bookmark whose URL is the bookmarklet code: the \`copy-as-markdown-vX.Y.Z.txt\` file attached to the latest GitHub release.
-
-## Use
-
-Select text on any page and click the bookmark. The selection is copied to the clipboard as Markdown.
-
-## What gets converted
-
-${CONVERTS.map((c) => `- ${c}`).join('\n')}
-
-Partial selections keep their context: select two list items and you get a list, select a few table rows and you get a table.
-
-## Links
-
-- [Install page](${SITE_URL})
-- [Source code](${REPO}): MIT license
-- [Latest release and bookmarklet code](${REPO}/releases/latest)
-- [README](${RAW}/README.md): install options, how the converter works, and how to build it
-
-## Optional
-
-- [Changelog](${RAW}/CHANGELOG.md): user-facing changes in each release
-- [Author](https://tuckbick.com)
-`;
+const llms = fill(read('site/llms.md'), {
+  description: site.DESCRIPTION,
+  version,
+  turndownVersion,
+  siteUrl: site.SITE_URL,
+  label,
+  convertsList: site.CONVERTS.map((c) => `- ${c}`).join('\n'),
+  repo: site.REPO,
+  raw: site.RAW
+});
 writeFileSync(new URL('llms.txt', dir), llms);
 console.log(`v${version}: bookmarklet ${url.length} chars -> bookmarklet.url.txt, index.html, llms.txt`);

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<link rel="canonical" href="{{siteUrl}}">
+<link rel="describedby" href="/llms.txt">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Copy as Markdown">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:url" content="{{siteUrl}}">
+<meta property="og:image" content="{{shareImage}}">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:image:alt" content="Clipboard icon">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{{structuredData}}</script>
+<link rel="icon" type="image/svg+xml" href="/icons/clipboard.svg">
+<style>
+{{style}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Copy as Markdown <span class="version">v{{version}}</span></h1>
+  <p class="lead">Select text on any page, click the bookmark, and the selection lands on your clipboard as Markdown.</p>
+
+  <h2 id="configure">Configure <span class="h2-note">optional</span></h2>
+  <section class="card picker" aria-labelledby="configure">
+    <p class="picker-label" id="emoji-label">Icon</p>
+    <div class="chips" id="emojis" role="group" aria-labelledby="emoji-label"></div>
+    <p class="picker-label" id="name-label">Name</p>
+    <div class="chips" id="names" role="group" aria-labelledby="name-label"></div>
+    <p class="picker-note muted">This becomes the bookmark's name. Browsers don't show icons for bookmarklets, so the emoji is how you'll spot it; shorter names won't get cut off in the bar.</p>
+  </section>
+
+  <h2>Install</h2>
+  <div class="card">
+    <ol>
+      <li>Show your bookmarks bar (<code>⌘⇧B</code> on Mac, <code>Ctrl+Shift+B</code> on Windows).</li>
+      <li>Drag this button onto the bookmarks bar:
+        <div class="drag-zone">
+          <a class="drag" id="drag" href="{{bookmarkletUrl}}" onclick="alert('Drag this button to your bookmarks bar instead of clicking it.'); return false;">{{label}}</a>
+        </div>
+      </li>
+    </ol>
+    <details id="code-details">
+      <summary class="muted">Drag not working (e.g. Safari)? Add it by hand</summary>
+      <p class="muted">Bookmark any page, edit that bookmark, name it <b class="current-name">{{label}}</b>, and replace its URL with this:</p>
+      <textarea id="code" readonly aria-label="Bookmarklet code"></textarea>
+      <button id="copybtn">Copy bookmarklet code</button>
+    </details>
+  </div>
+
+  <h2>Try it here</h2>
+  <p class="muted">Once installed, select some of the sample below and click the bookmark.</p>
+  <div class="card demo">
+    <h3>Sample section</h3>
+    <p>Some <strong>bold</strong>, <em>italic</em>, <code>inline code</code>, and a <a href="https://github.com/euangoddard/clipboard2markdown">link</a>.</p>
+    <ul>
+      <li>First item</li>
+      <li>Second item
+        <ul><li>Nested item</li></ul>
+      </li>
+    </ul>
+    <blockquote>A quoted line.</blockquote>
+    <table>
+      <tr><th>Name</th><th>Value</th></tr>
+      <tr><td>alpha</td><td>1</td></tr>
+      <tr><td>beta</td><td>2</td></tr>
+    </table>
+    <pre><code class="language-js">const x = 1;
+console.log(x);</code></pre>
+  </div>
+
+  <h2>What it does</h2>
+  <div class="card about">
+    <p>Copy as Markdown is a free bookmarklet that converts the text you select on a web page into Markdown and puts it on your clipboard. It saves the round trip of copying HTML, pasting it into a converter and copying the result again. Paste it straight into Obsidian, Notion, a GitHub issue or README, your notes app, or an AI chat.</p>
+    <h3>What gets converted</h3>
+    <ul>
+{{convertsList}}
+    </ul>
+    <p>Partial selections keep their context: select two list items and you get a list, select a few table rows and you get a table.</p>
+    <h3>How it works</h3>
+    <p>The conversion runs entirely in your browser, using a compact port of the <a href="https://github.com/mixmark-io/turndown">Turndown</a> HTML-to-Markdown converter. Nothing is sent anywhere, there's no extension to install, and it works on sites with strict security policies because it doesn't load any outside scripts. It works in Chrome, Edge, Firefox, Brave and other desktop browsers that support bookmarklets. It can't read apps that draw text on a canvas, such as Google Docs.</p>
+  </div>
+</main>
+
+<footer class="site-footer muted">
+    <p>Source: <a href="{{repo}}">github.com/tuckbick/copy-as-markdown</a> · Made by <a href="https://tuckbick.com">tuckbick.com</a></p>
+    <p>Version {{version}}, converter based on Turndown {{turndownVersion}}. <a href="{{repo}}/blob/main/CHANGELOG.md">Changelog</a> · <a href="{{repo}}/releases">Releases</a>. To check which version you have installed, edit the bookmark: its URL starts with <code>javascript:(function () {/* Copy as Markdown v…</code>.</p>
+    <p>MIT licensed. The converter is adapted from <a href="https://github.com/mixmark-io/turndown">Turndown</a> and <a href="https://github.com/mixmark-io/turndown-plugin-gfm">turndown-plugin-gfm</a> (MIT). Icon: <a href="https://github.com/jdecked/twemoji">Twemoji</a> 📋, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>. <a href="{{repo}}/blob/main/THIRD_PARTY_NOTICES.md">Full notices</a>.</p>
+</footer>
+<script type="application/json" id="config">{{config}}</script>
+<script>
+{{script}}
+</script>
+</body>
+</html>
